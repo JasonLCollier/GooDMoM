@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/baseline_dashboard_24"
+        android:title="@string/title_activity_dashboard" />
+
+    <item
+        android:id="@+id/navigation_reminders"
+        android:icon="@drawable/baseline_notifications_24"
+        android:title="@string/title_activity_reminders" />
+
+    <item
+        android:id="@+id/navigation_data"
+        android:icon="@drawable/baseline_add_24"
+        android:title="@string/title_activity_data" />
+
+    <item
+        android:id="@+id/navigation_messenger"
+        android:icon="@drawable/baseline_chat_bubble_24"
+        android:title="@string/title_activity_messenger" />
+
+    <item
+        android:id="@+id/navigation_tips"
+        android:icon="@drawable/baseline_education_24"
+        android:title="@string/title_activity_tips" />
+
+</menu>

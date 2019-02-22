@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "516014787847",
+    "firebase_url": "https://gd-mhealth.firebaseio.com",
+    "project_id": "gd-mhealth",
+    "storage_bucket": "gd-mhealth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516014787847:android:63a70d0cd682f8f0",
+        "android_client_info": {
+          "package_name": "za.ac.uct.goodmom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "516014787847-slmhc1prgcicat4nkma2hvm0cpv4tvng.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "za.ac.uct.goodmom",
+            "certificate_hash": "331e2ee05e7024e2f4d8154f2a67811f590e812a"
+          }
+        },
+        {
+          "client_id": "516014787847-dnpf3a77cgpq654t4iv2u7kg9f84llkq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0iQBKyAvCKZSrEsC8BzX2P3Z0M0aWpLE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516014787847-dnpf3a77cgpq654t4iv2u7kg9f84llkq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
