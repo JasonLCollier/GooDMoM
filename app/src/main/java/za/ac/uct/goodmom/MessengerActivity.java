@@ -167,7 +167,7 @@ public class MessengerActivity extends AppCompatActivity {
             case R.id.signout_menu:
                 onSignedOutCleanup();
                 AuthUI.getInstance().signOut(this);
-                Intent logoutIntent = new Intent(MessengerActivity.this, MainActivity.class);
+                Intent logoutIntent = new Intent(MessengerActivity.this, LandingActivity.class);
                 startActivity(logoutIntent);
                 return true;
             case R.id.settings_menu:

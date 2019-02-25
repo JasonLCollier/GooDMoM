@@ -9,9 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".SignupActivity"></activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".TipsActivity"
             android:label="@string/title_activity_tips" />
@@ -24,13 +25,10 @@
         <activity
             android:name=".RemindersActivity"
             android:label="@string/title_activity_reminders" />
+        <activity android:name=".LandingActivity" />
         <activity
             android:name=".DashboardActivity"
-            android:label="@string/title_activity_dashboard" />
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
-        <activity android:name=".MainActivity">
+            android:label="@string/title_activity_dashboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

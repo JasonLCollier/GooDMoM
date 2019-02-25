@@ -10,6 +10,11 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
+    <!-- Login theme. -->
+    <style name="LoginTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/bg_login</item>
+    </style>
+
     <!-- Heading text style. -->
     <style name="HeadingTextStyle">
         <item name="android:layout_height">wrap_content</item>

@@ -68,7 +68,7 @@ public class DataActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.signout_menu:
                 AuthUI.getInstance().signOut(this);
-                Intent logoutIntent = new Intent(DataActivity.this, MainActivity.class);
+                Intent logoutIntent = new Intent(DataActivity.this, LandingActivity.class);
                 startActivity(logoutIntent);
                 return true;
             case R.id.settings_menu:

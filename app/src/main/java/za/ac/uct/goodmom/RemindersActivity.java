@@ -68,7 +68,7 @@ public class RemindersActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.signout_menu:
                 AuthUI.getInstance().signOut(this);
-                Intent logoutIntent = new Intent(RemindersActivity.this, MainActivity.class);
+                Intent logoutIntent = new Intent(RemindersActivity.this, LandingActivity.class);
                 startActivity(logoutIntent);
                 return true;
             case R.id.settings_menu:
