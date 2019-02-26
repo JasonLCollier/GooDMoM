@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/background_image"
         android:scaleType="centerCrop"
+        android:gravity="end"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/background"
-        app:layout_constraintTop_toTopOf="@+id/background">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/name"
@@ -61,7 +62,7 @@
         style="@style/ButtonStyle"
         android:text="@string/exit"
         android:layout_marginBottom="36dp"
-        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
