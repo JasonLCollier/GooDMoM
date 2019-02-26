@@ -2,9 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <bitmap
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:src="@drawable/pregnant" />
+            android:src="@drawable/pregnant"
+            android:gravity="center"/>
     </item>
 </layer-list>

@@ -10,7 +10,7 @@
         android:id="@+id/background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Background image of pregnant woman"
+        android:contentDescription="@string/background_image"
         android:scaleType="centerCrop"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,18 +45,25 @@
             android:textColor="@color/primary_text"
             android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/login_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@color/primary"
-            android:text="@string/log_in"
-            android:textAllCaps="true"
-            android:textColor="@color/primary_light" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/login_button"
+        style="@style/ButtonStyle"
+        android:text="@string/log_in"
+        app:layout_constraintBottom_toTopOf="@+id/exit_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/exit_button"
+        style="@style/ButtonStyle"
+        android:text="@string/exit"
+        android:layout_marginBottom="36dp"
+        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -139,7 +139,10 @@ public class DashboardActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was canceled by the user, finish the activity
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
-                finish();
+
+                Intent landingIntent = new Intent(DashboardActivity.this, LandingActivity.class);
+
+                startActivity(landingIntent);
             }
         }
     }

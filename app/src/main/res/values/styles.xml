@@ -24,6 +24,21 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <!-- Button style. -->
+    <style name="ButtonStyle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:background">@drawable/bg_button_rounded</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/icons</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>
 
 

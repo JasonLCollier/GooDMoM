@@ -14,8 +14,9 @@
 
     <!-- Strings related to more options menu and buttons -->
     <string name="sign_up">Sign Up</string>
-    <string name="log_in">Log In</string>
-    <string name="log_out">Log Out</string>
+    <string name="log_in">Sign In</string>
+    <string name="log_out">Sign Out</string>
+    <string name="exit">Exit</string>
 
     <!-- Strings related to the messenger -->
     <string name="send_button_label">Send</string>
@@ -33,4 +34,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="background_image">Background image of pregnant woman</string>
 </resources>

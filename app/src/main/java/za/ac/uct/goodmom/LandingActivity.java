@@ -13,8 +13,9 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-
+        // Assign buttons to variables
         Button logIn = findViewById(R.id.login_button);
+        Button exit = findViewById(R.id.exit_button);
 
         // Set a click listener on that button
         logIn.setOnClickListener(new View.OnClickListener() {
@@ -27,6 +28,15 @@ public class LandingActivity extends AppCompatActivity {
 
                 // Start the new activity
                 startActivity(signUpIntent);
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            // The code in this method will be executed when the Log In button is clicked on.
+            @Override
+            public void onClick(View view) {
+                finish();
+                moveTaskToBack(true);
             }
         });
     }
