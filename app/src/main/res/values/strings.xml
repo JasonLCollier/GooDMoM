@@ -2,6 +2,7 @@
     <!-- Strings related to name and description -->
     <string name="app_name">GooDMoM</string>
     <string name="description">Gestational Diabetes Mobile Management</string>
+    <string name="background_image">Background image of pregnant woman</string>
 
     <!-- Strings related to activity labels -->
     <string name="title_activity_dashboard">Dashboard</string>
@@ -34,5 +35,4 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="background_image">Background image of pregnant woman</string>
 </resources>

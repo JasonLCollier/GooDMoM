@@ -77,6 +77,7 @@ public class DashboardActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+
                 } else {
                     // User is signed out
                     startActivityForResult(
@@ -84,6 +85,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     .createSignInIntentBuilder()
                                     .setAvailableProviders(Arrays.asList(
                                             new AuthUI.IdpConfig.EmailBuilder().build(),
+                                            new AuthUI.IdpConfig.PhoneBuilder().build(),
                                             new AuthUI.IdpConfig.GoogleBuilder().build()))
                                     .setTheme(R.style.LoginTheme)
                                     //.setLogo(R.drawable.pregnant)
@@ -129,7 +131,6 @@ public class DashboardActivity extends AppCompatActivity {
                 if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
                     // The user is new, take them to the sign up activity for additional info
                     Intent signUpIntent = new Intent(DashboardActivity.this, SignupActivity.class);
-
                     startActivity(signUpIntent);
                 } else {
                     // This is an existing user, show them the dashboard.
@@ -141,7 +142,6 @@ public class DashboardActivity extends AppCompatActivity {
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
 
                 Intent landingIntent = new Intent(DashboardActivity.this, LandingActivity.class);
-
                 startActivity(landingIntent);
             }
         }
