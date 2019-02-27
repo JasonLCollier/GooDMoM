@@ -76,10 +76,10 @@ public class DashboardActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
+                    // za.ac.uct.goodmom.User is signed in
 
                 } else {
-                    // User is signed out
+                    // za.ac.uct.goodmom.User is signed out
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()

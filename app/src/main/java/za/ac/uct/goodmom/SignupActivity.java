@@ -1,10 +1,9 @@
 package za.ac.uct.goodmom;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -13,16 +12,23 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        Button signup = findViewById(R.id.signup_button);
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        // Create an adapter that knows which fragment should be shown on each page
+        FragmentSignupAdapter adapter = new FragmentSignupAdapter(this, getSupportFragmentManager());
 
-                Intent signUpIntent = new Intent(SignupActivity.this, DashboardActivity.class);
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(adapter);
 
-                startActivity(signUpIntent);
-            }
-        });
+        // Find the tab layout that shows the tabs
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        // Connect the tab layout with the view pager. This will
+        //   1. Update the tab layout when the view pager is swiped
+        //   2. Update the view pager when a tab is selected
+        //   3. Set the tab layout's tab names with the view pager's adapter's titles
+        //      by calling onPageTitle()
+        tabLayout.setupWithViewPager(viewPager);
     }
 }
