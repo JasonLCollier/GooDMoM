@@ -66,8 +66,6 @@ public class DashboardActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
 
-        /*Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);*/
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -130,7 +128,7 @@ public class DashboardActivity extends AppCompatActivity {
                 FirebaseUserMetadata metadata = mFirebaseAuth.getCurrentUser().getMetadata();
                 if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
                     // The user is new, take them to the sign up activity for additional info
-                    Intent signUpIntent = new Intent(DashboardActivity.this, SignupActivity.class);
+                    Intent signUpIntent = new Intent(DashboardActivity.this, PersonalInfoActivity.class);
                     startActivity(signUpIntent);
                 } else {
                     // This is an existing user, show them the dashboard.

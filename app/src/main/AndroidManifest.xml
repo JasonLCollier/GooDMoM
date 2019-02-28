@@ -9,28 +9,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignupActivity"></activity>
+        <activity
+            android:name=".ClinicalInfoActivity"
+            android:label="@string/clinical_information"
+            android:parentActivityName=".PersonalInfoActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PersonalInfoActivity" />
+        </activity>
+        <activity
+            android:name=".PersonalInfoActivity"
+            android:label="@string/personal_information"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".DashboardActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DashboardActivity"/>
+                android:value=".DashboardActivity" />
         </activity>
         <activity
             android:name=".TipsActivity"
-            android:label="@string/title_activity_tips"/>
+            android:label="@string/title_activity_tips" />
         <activity
             android:name=".MessengerActivity"
-            android:label="@string/title_activity_messenger"/>
+            android:label="@string/title_activity_messenger" />
         <activity
             android:name=".DataActivity"
-            android:label="@string/title_activity_data"/>
+            android:label="@string/title_activity_data" />
         <activity
             android:name=".RemindersActivity"
-            android:label="@string/title_activity_reminders"/>
+            android:label="@string/title_activity_reminders" />
         <activity android:name=".LandingActivity" />
         <activity
             android:name=".DashboardActivity"

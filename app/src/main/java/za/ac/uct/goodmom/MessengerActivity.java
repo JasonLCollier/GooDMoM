@@ -41,6 +41,7 @@ public class MessengerActivity extends AppCompatActivity {
     private Button mSendButton;
 
     private String mUsername;
+    private String mUserId;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -86,11 +87,10 @@ public class MessengerActivity extends AppCompatActivity {
         // Initialise Firebase components
         mFirebasedatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("messages");
-
-        // Initialise username
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
+        mUserId = user.getUid();
+        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("messages").child(mUserId);
 
         // Initialize references to views
         mProgressBar = findViewById(R.id.progress_bar);

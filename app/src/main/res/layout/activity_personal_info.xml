@@ -7,7 +7,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".PersonalInformationFragment">
 
         <EditText
@@ -48,7 +48,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
-            android:inputType="textPostalAddress"
+            android:inputType="textCapWords"
             app:layout_constraintBottom_toBottomOf="@+id/house_number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/house_number" />
@@ -62,7 +62,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
-            android:inputType="textPostalAddress"
+            android:inputType="textCapWords"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/city_text_view" />
@@ -76,7 +76,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
-            android:inputType="textPostalAddress"
+            android:inputType="textCapWords"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/province_text_view" />
@@ -213,12 +213,17 @@
         <Button
             android:id="@+id/save_button"
             style="@style/ButtonStyle"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:text="Button"
+            android:text="@string/save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postal_code" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

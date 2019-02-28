@@ -20,7 +20,7 @@
     <string name="log_in">Sign In</string>
     <string name="log_out">Sign Out</string>
     <string name="exit">Exit</string>
-    <string name="save">Save</string>
+    <string name="save">Save and Continue</string>
 
     <!-- Strings related to the messenger -->
     <string name="send_button_label">Send</string>

@@ -2,6 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <bitmap
-            android:src="@drawable/pregnant"/>
+            android:src="@drawable/pregnant"
+            android:alpha="0.5"/>
     </item>
 </layer-list>

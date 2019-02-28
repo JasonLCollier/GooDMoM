@@ -62,14 +62,6 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <Button
-            android:id="@+id/temp_button"
-            style="@style/ButtonStyle"
-            android:text="Temp"
-            app:layout_constraintBottom_toTopOf="@id/login_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
             android:id="@+id/login_button"
             style="@style/ButtonStyle"
             android:text="@string/log_in"
