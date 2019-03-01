@@ -3,12 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/signout_menu"
+        android:title="@string/log_out"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/settings_menu"
         android:title="@string/title_activity_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/signout_menu"
-        android:title="@string/log_out"
+        android:id="@+id/help_menu"
+        android:title="@string/help"
         app:showAsAction="never" />
 
 </menu>
