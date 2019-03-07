@@ -54,7 +54,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
 
                 // Update user object
                 Intent userInfo = getIntent();
-                User newUser = (User)userInfo.getSerializableExtra("userObject");
+                User newUser = (User) userInfo.getSerializableExtra("userObject");
                 newUser.setName(mUsername);
                 newUser.setPhone("0000000000");
                 newUser.setHpSurname(mHpSurnameText.getText().toString());
