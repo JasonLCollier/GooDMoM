@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
+
+    <ImageView
+        android:id="@+id/post_thumb"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="5dp"
+        android:scaleType="centerCrop"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/post_thumb"
+        android:layout_toRightOf="@id/post_thumb"
+        android:maxLines="2"
+        android:text="@string/post_title"
+        android:textIsSelectable="false"
+        android:textSize="16sp"
+        android:ellipsize="end"/>
+
+    <TextView
+        android:id="@+id/post_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/post_thumb"
+        android:layout_toRightOf="@id/post_thumb"
+        android:maxLines="1"
+        android:text="@string/post_date"
+        android:textSize="12sp"
+        />
+</RelativeLayout>
