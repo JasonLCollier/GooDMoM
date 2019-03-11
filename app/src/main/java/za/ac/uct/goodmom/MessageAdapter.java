@@ -18,7 +18,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
+            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.message_item, parent, false);
         }
 
         TextView messageTextView = (TextView) convertView.findViewById(R.id.message_text_view);

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class PostData implements Comparable<PostData> {
+
     /** Tag for the log messages */
     public static final String LOG_TAG = PostData.class.getSimpleName();
 

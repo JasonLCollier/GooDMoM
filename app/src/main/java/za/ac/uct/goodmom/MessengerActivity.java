@@ -100,7 +100,7 @@ public class MessengerActivity extends AppCompatActivity {
 
         // Initialize message ListView and its adapter
         List<Message> messages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, messages);
+        mMessageAdapter = new MessageAdapter(this, R.layout.message_item, messages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         // Enable Send button when there's text to send

@@ -13,12 +13,14 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".WebViewActivity"
-            android:parentActivityName=".DashboardActivity">
+            android:parentActivityName=".TipsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="za.ac.uct.goodmom.DashboardActivity" />
         </activity>
-        <activity android:name=".HelpActivity" />
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -29,7 +31,7 @@
         </activity>
         <activity
             android:name=".ClinicalInfoActivity"
-            android:label="@string/clinical_information"
+            android:label="@string/title_activity_clinical_info"
             android:parentActivityName=".PersonalInfoActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -37,7 +39,7 @@
         </activity>
         <activity
             android:name=".PersonalInfoActivity"
-            android:label="@string/personal_information" />
+            android:label="@string/title_activity_personal_info" />
         <activity
             android:name=".TipsActivity"
             android:label="@string/title_activity_tips" />
