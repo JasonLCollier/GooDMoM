@@ -22,7 +22,7 @@
         android:layout_alignTop="@id/post_thumb"
         android:layout_toRightOf="@id/post_thumb"
         android:maxLines="2"
-        android:text="@string/post_title"
+        tools:text="Post Title"
         android:textIsSelectable="false"
         android:textSize="16sp"
         android:ellipsize="end"/>
@@ -35,7 +35,7 @@
         android:layout_alignBottom="@id/post_thumb"
         android:layout_toRightOf="@id/post_thumb"
         android:maxLines="1"
-        android:text="@string/post_date"
+        tools:text="1 January 2019"
         android:textSize="12sp"
         />
 </RelativeLayout>

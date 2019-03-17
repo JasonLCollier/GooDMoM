@@ -4,12 +4,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class RemindersActivity extends AppCompatActivity {
 
@@ -43,14 +59,78 @@ public class RemindersActivity extends AppCompatActivity {
         }
     };
 
+    private FloatingActionButton mFab;
+
+    private ArrayList<Event> mEventList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private EventAdapter mEventAdapter;
+
+    private String mUsername, mUserId;
+
+    // Firebase instance variables
+    private FirebaseDatabase mFirebasedatabase;
+    private DatabaseReference mMessagesDatabaseReference;
+    private ChildEventListener mChildEventListener = null;
+    private FirebaseAuth mFirebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
 
+        // Initialise Firebase components
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        mFirebasedatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        mUsername = user.getDisplayName();
+        mUserId = user.getUid();
+        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
+
+        // Assign variables to views
+        mFab = findViewById(R.id.fab);
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mEventAdapter = new EventAdapter(mEventList);
+
+        // Set up the recycler view
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        // set the adapter
+        mRecyclerView.setAdapter(mEventAdapter);
+
+        // row click listener
+        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Event event = mEventList.get(position);
+                Toast.makeText(getApplicationContext(), event.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
+        // floating action button click listener
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newEventIntent = new Intent(RemindersActivity.this, AddEventActivity.class);
+                startActivity(newEventIntent);
+            }
+        });
+
+        // Attach the database read listener
+        attachDatabaseReadListener();
+
+        // Set up bottom navigation view
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        // Set up menu
         Menu menu = navigation.getMenu();
         MenuItem menuItem = menu.getItem(1);
         menuItem.setChecked(true);
@@ -77,6 +157,47 @@ public class RemindersActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mEventList.clear();
+        detachDatabaseReadListener();
+    }
+
+    private void attachDatabaseReadListener() {
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    mEventList.add(event);
+                    Collections.sort(mEventList);
+                    mEventAdapter.notifyDataSetChanged();
+                }
+
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mChildEventListener != null) {
+            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
         }
     }
 

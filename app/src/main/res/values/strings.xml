@@ -55,7 +55,33 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
     <!-- Settings for Tips -->
-    <string name="post_title">Post Title</string>
-    <string name="post_date">1 January 2019</string>
+
+    <!-- Strings related to reminders -->
+    <string-array name="event_type_array">
+        <item>Appointment</item>
+        <item>Medication</item>
+        <item>Glucose Reading</item>
+    </string-array>
+
+    <string-array name="day_array">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+    <string name="enter_title_hint">Enter Title</string>
+    <string name="add_location_hint">Add location</string>
+    <string name="add_note_hint">Add note</string>
+    <string name="repeat">Repeat</string>
+    <string name="every">every</string>
+    <string name="weeks">weeks</string>
+    <string name="end">End</string>
+    <string name="after">after</string>
+    <string name="counts">counts</string>
+    <string name="create_event">Create Event</string>
 
 </resources>

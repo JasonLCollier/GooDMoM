@@ -12,15 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".AddEventActivity"
+            android:parentActivityName=".RemindersActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="za.ac.uct.goodmom.RemindersActivity" />
+        </activity>
+        <activity
             android:name=".WebViewActivity"
             android:parentActivityName=".TipsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="za.ac.uct.goodmom.DashboardActivity" />
+                android:value="za.ac.uct.goodmom.TipsActivity" />
         </activity>
         <activity
             android:name=".HelpActivity"
-            android:label="@string/title_activity_help"/>
+            android:label="@string/title_activity_help" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"

@@ -40,8 +40,7 @@ public class MessengerActivity extends AppCompatActivity {
     private EditText mMessageEditText;
     private Button mSendButton;
 
-    private String mUsername;
-    private String mUserId;
+    private String mUsername, mUserId;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -85,6 +84,7 @@ public class MessengerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messenger);
 
         // Initialise Firebase components
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebasedatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
@@ -100,7 +100,7 @@ public class MessengerActivity extends AppCompatActivity {
 
         // Initialize message ListView and its adapter
         List<Message> messages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.message_item, messages);
+        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, messages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         // Enable Send button when there's text to send

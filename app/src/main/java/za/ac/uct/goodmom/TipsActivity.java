@@ -182,7 +182,7 @@ public class TipsActivity extends AppCompatActivity {
     }
 
     /**
-     * {@liink AsyncTask } to perform the network request on a background thread, and then
+     * {@liink AsyncTask } to perform the network request on a bg_main thread, and then
      * update the UI with the response
      */
 

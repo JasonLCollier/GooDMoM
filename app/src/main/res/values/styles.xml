@@ -8,14 +8,21 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <!-- Theme UI controls like checkboxes and text fields. -->
         <item name="colorAccent">@color/accent</item>
-        <!-- background colour. -->
-        <item name="android:windowBackground">@drawable/background</item>
+        <!-- bg_main colour. -->
+        <item name="android:windowBackground">@drawable/bg_main</item>
 
     </style>
 
     <!-- Login theme. -->
     <style name="LoginTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/bg_login</item>
+    </style>
+
+    <!-- Dialog theme. -->
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!-- Heading text style. -->
