@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +41,7 @@ public class AddDataActivity extends AppCompatActivity {
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
 
-    private String mMealDescr, mActivityDescr, mMedication, mDateTime, mLocation, mActivityTime, mGlucoseStr, mWeightStr;
+    private String mMealDescr, mActivityDescr, mMedication, mDateTime, mLocation, mActivityTime, mGlucoseStr, mCarbsStr, mWeightStr;
     private double mGlucose, mWeight;
     private int  mCarbs, mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek;
 
@@ -89,15 +90,18 @@ public class AddDataActivity extends AppCompatActivity {
         mHour = c.get(Calendar.HOUR_OF_DAY); // current hour
         mMinute = c.get(Calendar.MINUTE); // current minute
 
-        // Update glucose, date time and location views
+        // Initialise glucose view
         mGlucoseStr = "0.0";
         mGlucoseText.setText(mGlucoseStr);
-
+        // Initialise date time view
         mDateTime = mDay + "/" + (mMonth + 1) + "/" + mYear + "/" + createTimeString(mHour, mMinute);
         mDateTimeText.setText(formatDisplayDate(mDateTime));
-
+        // Initialise location view
         mLocation = "Click to find location";
         mLocationText.setText(mLocation);
+        // Initialise carbs view
+        mCarbsStr = "0";
+        mCarbsText.setText(mCarbsStr);
 
        // On click listener for glucose value
         mGlucoseContainer.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +109,7 @@ public class AddDataActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Set up dialog
                 mDialog = new Dialog(AddDataActivity.this);
-                mDialog.setContentView(R.layout.dialog_number_picker);
+                mDialog.setContentView(R.layout.dialog_edit_text);
 
                 mDoubleNumberText = mDialog.findViewById(R.id.number_val);
 
@@ -114,7 +118,7 @@ public class AddDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Exit dialog
-
+                        mDialog.dismiss();
                     }
                 });
 
@@ -123,10 +127,12 @@ public class AddDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Get the glucose value
-                        mGlucose = Double.valueOf(mDoubleNumberText.getText().toString());
+                        mGlucoseStr = mDoubleNumberText.getText().toString();
+                        mGlucose = Double.valueOf(mGlucoseStr);
+                        mGlucoseText.setText(mGlucoseStr);
 
                         // Exit dialog
-
+                        mDialog.dismiss();
                     }
                 });
 
@@ -138,6 +144,20 @@ public class AddDataActivity extends AppCompatActivity {
         mTimeContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // time picker dialog
+                mTimePickerDialog = new TimePickerDialog(AddDataActivity.this, R.style.DialogTheme,
+                        new TimePickerDialog.OnTimeSetListener() {
+
+                            @Override
+                            public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                // set hour of day and minute value in the edit text
+                                mDateTime += createTimeString(selectedHour, selectedMinute);
+
+                                mDateTimeText.setText(formatDisplayDate(mDateTime));
+                            }
+                        }, mHour, mMinute, true);// Yes 24 hour time
+                mTimePickerDialog.show();
+
                 // date picker dialog
                 mDatePickerDialog = new DatePickerDialog(AddDataActivity.this, R.style.DialogTheme,
                         new DatePickerDialog.OnDateSetListener() {
@@ -146,13 +166,10 @@ public class AddDataActivity extends AppCompatActivity {
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
                                 // set day of month , month and year value in the edit text
-                                mDateTime = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+                                mDateTime = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year + "/";
                             }
                         }, mYear, mMonth, mDay);
                 mDatePickerDialog.show();
-
-                // time picker dialog
-
             }
         });
 
@@ -165,7 +182,7 @@ public class AddDataActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Set up dialog
                 mDialog = new Dialog(AddDataActivity.this);
-                mDialog.setContentView(R.layout.dialog_number_picker);
+                mDialog.setContentView(R.layout.dialog_edit_text);
 
                 mDoubleNumberText = mDialog.findViewById(R.id.number_val);
 
@@ -174,7 +191,7 @@ public class AddDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Exit dialog
-
+                        mDialog.dismiss();
                     }
                 });
 
@@ -183,10 +200,12 @@ public class AddDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Get the glucose value
-                        mWeight = Double.valueOf(mDoubleNumberText.getText().toString());
+                        mWeightStr = mDoubleNumberText.getText().toString();
+                        mWeight = Double.valueOf(mWeightStr);
+                        mWeightText.setText(mWeightStr);
 
                         // Exit dialog
-
+                        mDialog.dismiss();
                     }
                 });
 
@@ -215,7 +234,7 @@ public class AddDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Exit dialog
-
+                        mDialog.dismiss();
                     }
                 });
 
@@ -225,8 +244,11 @@ public class AddDataActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         // Get the carbs value
                         mCarbs = mNumberPicker.getValue();
+                        mCarbsStr = String.valueOf(mCarbs);
+                        mCarbsText.setText(mCarbsStr);
 
                         // Exit dialog
+                        mDialog.dismiss();
                     }
                 });
 
