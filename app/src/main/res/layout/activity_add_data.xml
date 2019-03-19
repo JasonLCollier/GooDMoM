@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/data_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".AddDataActivity">
+
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_sync_black_24" />
+
+        <TextView
+            android:id="@+id/glucose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView8"
+            app:layout_constraintStart_toEndOf="@+id/imageView8"
+            app:layout_constraintTop_toTopOf="@+id/imageView8"
+            tools:text="5 mmol/L" />
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView8"
+            app:srcCompat="@drawable/baseline_access_time_black_24" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+            app:layout_constraintStart_toEndOf="@+id/imageView9"
+            app:layout_constraintTop_toTopOf="@+id/imageView9"
+            tools:text="Mon, 18 March 2019 at 08:00" />
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView9"
+            app:srcCompat="@drawable/baseline_location_on_black_24" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+            app:layout_constraintStart_toEndOf="@+id/imageView10"
+            app:layout_constraintTop_toTopOf="@+id/imageView10"
+            tools:text="Cape Town, South Africa" />
+
+        <TextView
+            android:id="@+id/meal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/meal"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+
+        <EditText
+            android:id="@+id/meal_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:backgroundTint="@color/primary"
+            android:ems="10"
+            android:hint="@string/meal_hint"
+            android:inputType="textCapWords"
+            app:layout_constraintBottom_toBottomOf="@+id/meal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintTop_toTopOf="@+id/meal" />
+
+        <TextView
+            android:id="@+id/carbs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/carbs"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/meal" />
+
+        <TextView
+            android:id="@+id/carbs_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintTop_toTopOf="@+id/carbs"
+            tools:text="0" />
+
+        <TextView
+            android:id="@+id/carbs_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@string/carbs_unit"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toEndOf="@+id/carbs_val"
+            app:layout_constraintTop_toTopOf="@+id/carbs" />
+
+        <TextView
+            android:id="@+id/activity_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/activity"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/carbs" />
+
+        <EditText
+            android:id="@+id/activity_description_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:backgroundTint="@color/primary"
+            android:ems="10"
+            android:hint="@string/meal_hint"
+            android:inputType="textCapSentences"
+            app:layout_constraintBottom_toBottomOf="@+id/activity_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/activity_description"
+            app:layout_constraintTop_toTopOf="@+id/activity_description" />
+
+        <TextView
+            android:id="@+id/activity_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/activity"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_description" />
+
+        <TextView
+            android:id="@+id/activity_time_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activity_time_hint"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintTop_toTopOf="@+id/activity_time" />
+
+        <TextView
+            android:id="@+id/body_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/body_weight"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_time" />
+
+        <TextView
+            android:id="@+id/body_weight_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00.0"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="@+id/activity_time_val"
+            app:layout_constraintTop_toTopOf="@+id/body_weight" />
+
+        <TextView
+            android:id="@+id/body_weight_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@string/body_weight_unit"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toEndOf="@+id/body_weight_val"
+            app:layout_constraintTop_toTopOf="@+id/body_weight_val" />
+
+        <TextView
+            android:id="@+id/medication"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/medication"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/body_weight" />
+
+        <EditText
+            android:id="@+id/medication_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:backgroundTint="@color/primary"
+            android:ems="10"
+            android:hint="@string/meal_hint"
+            android:inputType="textCapWords"
+            app:layout_constraintBottom_toBottomOf="@+id/medication"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/medication"
+            app:layout_constraintTop_toTopOf="@+id/medication" />
+
+        <Button
+            android:id="@+id/add_data_button"
+            style="@style/ButtonStyle"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/add_data"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/medication_val" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

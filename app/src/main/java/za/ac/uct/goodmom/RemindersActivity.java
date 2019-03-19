@@ -42,10 +42,6 @@ public class RemindersActivity extends AppCompatActivity {
                 case R.id.navigation_reminders:
                     // Current activity
                     return true;
-                case R.id.navigation_data:
-                    Intent remindersIntent = new Intent(RemindersActivity.this, DataActivity.class);
-                    startActivity(remindersIntent);
-                    return true;
                 case R.id.navigation_messenger:
                     Intent messengerIntent = new Intent(RemindersActivity.this, MessengerActivity.class);
                     startActivity(messengerIntent);

@@ -62,10 +62,6 @@ public class MessengerActivity extends AppCompatActivity {
                     Intent remindersIntent = new Intent(MessengerActivity.this, RemindersActivity.class);
                     startActivity(remindersIntent);
                     return true;
-                case R.id.navigation_data:
-                    Intent dataIntent = new Intent(MessengerActivity.this, DataActivity.class);
-                    startActivity(dataIntent);
-                    return true;
                 case R.id.navigation_messenger:
                     // Current activity
                     return true;
@@ -149,7 +145,7 @@ public class MessengerActivity extends AppCompatActivity {
 
         //set up menu
         Menu menu = navigation.getMenu();
-        MenuItem menuItem = menu.getItem(3);
+        MenuItem menuItem = menu.getItem(2);
         menuItem.setChecked(true);
 
     }

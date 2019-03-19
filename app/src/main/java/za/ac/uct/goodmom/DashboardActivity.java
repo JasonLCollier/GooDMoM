@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -37,10 +39,6 @@ public class DashboardActivity extends AppCompatActivity {
                     Intent remindersIntent = new Intent(DashboardActivity.this, RemindersActivity.class);
                     startActivity(remindersIntent);
                     return true;
-                case R.id.navigation_data:
-                    Intent dataIntent = new Intent(DashboardActivity.this, DataActivity.class);
-                    startActivity(dataIntent);
-                    return true;
                 case R.id.navigation_messenger:
                     Intent messengerIntent = new Intent(DashboardActivity.this, MessengerActivity.class);
                     startActivity(messengerIntent);
@@ -54,10 +52,24 @@ public class DashboardActivity extends AppCompatActivity {
         }
     };
 
+    private FloatingActionButton mFab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        // Assign variables to views
+        mFab = findViewById(R.id.fab);
+
+        // floating action button click listener
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newEventIntent = new Intent(DashboardActivity.this, AddDataActivity.class);
+                startActivity(newEventIntent);
+            }
+        });
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -83,8 +95,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     .createSignInIntentBuilder()
                                     .setAvailableProviders(Arrays.asList(
                                             new AuthUI.IdpConfig.EmailBuilder().build(),
-                                            new AuthUI.IdpConfig.PhoneBuilder().build(),
-                                            new AuthUI.IdpConfig.GoogleBuilder().build()))
+                                            new AuthUI.IdpConfig.PhoneBuilder().build()))
                                     .setTheme(R.style.LoginTheme)
                                     //.setLogo(R.drawable.pregnant)
                                     .build(),

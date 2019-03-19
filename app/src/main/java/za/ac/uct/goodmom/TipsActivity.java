@@ -63,10 +63,6 @@ public class TipsActivity extends AppCompatActivity {
                     Intent remindersIntent = new Intent(TipsActivity.this, RemindersActivity.class);
                     startActivity(remindersIntent);
                     return true;
-                case R.id.navigation_data:
-                    Intent dataIntent = new Intent(TipsActivity.this, DataActivity.class);
-                    startActivity(dataIntent);
-                    return true;
                 case R.id.navigation_messenger:
                     Intent messengerIntent = new Intent(TipsActivity.this, MessengerActivity.class);
                     startActivity(messengerIntent);
@@ -88,7 +84,7 @@ public class TipsActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Menu menu = navigation.getMenu();
-        MenuItem menuItem = menu.getItem(4);
+        MenuItem menuItem = menu.getItem(3);
         menuItem.setChecked(true);
 
         // Initialize references to views
