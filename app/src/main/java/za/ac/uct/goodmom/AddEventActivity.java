@@ -49,8 +49,6 @@ public class AddEventActivity extends AppCompatActivity {
     private int mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek;
     private String mTitleStr, mRepeatPeriodStr, mRepeatCountStr, mLocationStr,
             mDescriptionStr, mStartDateStr, mEndDateStr, mStartTimeStr, mEndTimeStr;
-
-    private ArrayList<Event> mEventList = new ArrayList<>();
     private Event mNewEvent;
 
     private String mUsername, mUserId;

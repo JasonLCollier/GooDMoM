@@ -14,74 +14,98 @@
         tools:context=".AddDataActivity">
 
 
-        <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <LinearLayout
+            android:id="@+id/glucose_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_sync_black_24" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/glucose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView8"
-            app:layout_constraintStart_toEndOf="@+id/imageView8"
-            app:layout_constraintTop_toTopOf="@+id/imageView8"
-            tools:text="5 mmol/L" />
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/baseline_sync_black_24" />
 
-        <ImageView
-            android:id="@+id/imageView9"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            <TextView
+                android:id="@+id/glucose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="5.0 mmol/L" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/time_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView8"
-            app:srcCompat="@drawable/baseline_access_time_black_24" />
+            app:layout_constraintTop_toBottomOf="@+id/glucose_container">
 
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
-            app:layout_constraintStart_toEndOf="@+id/imageView9"
-            app:layout_constraintTop_toTopOf="@+id/imageView9"
-            tools:text="Mon, 18 March 2019 at 08:00" />
+            <ImageView
+                android:id="@+id/imageView9"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/baseline_access_time_black_24" />
 
-        <ImageView
-            android:id="@+id/imageView10"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            <TextView
+                android:id="@+id/date_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="Mon, 18 March 2019 at 08:00" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/location_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView9"
-            app:srcCompat="@drawable/baseline_location_on_black_24" />
+            app:layout_constraintTop_toBottomOf="@+id/time_container">
 
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView10"
-            app:layout_constraintStart_toEndOf="@+id/imageView10"
-            app:layout_constraintTop_toTopOf="@+id/imageView10"
-            tools:text="Cape Town, South Africa" />
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/baseline_location_on_black_24" />
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="Cape Town, South Africa" />
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/meal"
@@ -89,14 +113,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:text="@string/meal"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+            app:layout_constraintTop_toBottomOf="@+id/location_container" />
 
         <EditText
-            android:id="@+id/meal_value"
+            android:id="@+id/meal_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -122,25 +146,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/meal" />
 
-        <TextView
-            android:id="@+id/carbs_val"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.Medium"
+        <LinearLayout
+            android:id="@+id/carbs_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/activity_description_val"
-            app:layout_constraintTop_toTopOf="@+id/carbs"
-            tools:text="0" />
+            app:layout_constraintTop_toTopOf="@+id/carbs">
 
-        <TextView
-            android:id="@+id/carbs_unit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/carbs_unit"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintStart_toEndOf="@+id/carbs_val"
-            app:layout_constraintTop_toTopOf="@+id/carbs" />
+            <TextView
+                android:id="@+id/carbs_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:layout_editor_absoluteX="91dp"
+                tools:layout_editor_absoluteY="192dp"
+                tools:text="0" />
+
+            <TextView
+                android:id="@+id/carbs_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/carbs_unit"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:layout_editor_absoluteX="109dp"
+                tools:layout_editor_absoluteY="192dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/activity_description"
@@ -204,25 +239,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_time" />
 
-        <TextView
-            android:id="@+id/body_weight_val"
+        <LinearLayout
+            android:id="@+id/weight_container"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00.0"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintStart_toStartOf="@+id/activity_time_val"
-            app:layout_constraintTop_toTopOf="@+id/body_weight" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintTop_toTopOf="@+id/body_weight">
 
-        <TextView
-            android:id="@+id/body_weight_unit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/body_weight_unit"
-            android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintStart_toEndOf="@+id/body_weight_val"
-            app:layout_constraintTop_toTopOf="@+id/body_weight_val" />
+            <TextView
+                android:id="@+id/body_weight_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:text="00.0"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:layout_editor_absoluteX="91dp"
+                tools:layout_editor_absoluteY="336dp" />
+
+            <TextView
+                android:id="@+id/body_weight_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/body_weight_unit"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:layout_editor_absoluteX="133dp"
+                tools:layout_editor_absoluteY="336dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/medication"

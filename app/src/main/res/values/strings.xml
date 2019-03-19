@@ -25,6 +25,8 @@
     <string name="help">Help &amp; Feedback</string>
     <string name="create_event">Create Event</string>
     <string name="add_data">Add Data</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
     <!-- Strings related to the messenger -->
     <string name="send_button_label">Send</string>
