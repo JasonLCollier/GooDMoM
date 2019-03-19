@@ -19,17 +19,12 @@ import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 
 public class AddEventActivity extends AppCompatActivity {
@@ -55,7 +50,7 @@ public class AddEventActivity extends AppCompatActivity {
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mMessagesDatabaseReference;
+    private DatabaseReference mEventsDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
 
     @Override
@@ -69,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
+        mEventsDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
 
         // Initialise references to views
         mTitleText = findViewById(R.id.title);
@@ -245,7 +240,7 @@ public class AddEventActivity extends AppCompatActivity {
                         convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
 
                 // Push new event to database
-                mMessagesDatabaseReference.push().setValue(mNewEvent);
+                mEventsDatabaseReference.push().setValue(mNewEvent);
 
                 // Return to RemindersActivity with updated event list
                 Intent newEventIntent = new Intent(AddEventActivity.this, RemindersActivity.class);

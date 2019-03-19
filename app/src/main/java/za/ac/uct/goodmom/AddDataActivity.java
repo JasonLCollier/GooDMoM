@@ -45,11 +45,13 @@ public class AddDataActivity extends AppCompatActivity {
     private double mGlucose, mWeight;
     private int  mCarbs, mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek;
 
+    private GdData mNewData;
+
     private String mUsername, mUserId;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mMessagesDatabaseReference;
+    private DatabaseReference mDataDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
 
     @Override
@@ -63,7 +65,7 @@ public class AddDataActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
+        mDataDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
 
         // Initialise references to views
         mGlucoseText = findViewById(R.id.glucose);
@@ -266,10 +268,11 @@ public class AddDataActivity extends AppCompatActivity {
                 mMedication = mMedicationText.getText().toString();
 
                 // Create new GdData Object
-
+                mNewData = new GdData(mGlucose, 0, mWeight, 0, "",
+                        mMealDescr, mActivityDescr, mMedication, mCarbs);
 
                 // Push new event to database
-                //mMessagesDatabaseReference.push().setValue();
+                mDataDatabaseReference.push().setValue(mNewData);
 
                 // Return to RemindersActivity with updated event list
                 Intent newEventIntent = new Intent(AddDataActivity.this, DashboardActivity.class);
