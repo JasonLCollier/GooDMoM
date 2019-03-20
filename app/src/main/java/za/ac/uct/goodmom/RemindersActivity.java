@@ -66,7 +66,7 @@ public class RemindersActivity extends AppCompatActivity {
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mMessagesDatabaseReference;
-    private ChildEventListener mChildEventListener = null;
+    private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
 
     @Override

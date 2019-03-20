@@ -1,6 +1,8 @@
 package za.ac.uct.goodmom;
 
-public class GdData {
+import java.util.Date;
+
+public class GdData implements Comparable<GdData> {
     private double mGlucose, mActivityTime, mWeight;
     private long mDateTime;
     private String mLocation, mMeal, mActivityDescription, mMedication;
@@ -91,5 +93,16 @@ public class GdData {
 
     public void setmWeight(double mWeight) {
         this.mWeight = mWeight;
+    }
+
+    public Date getDateObject(long dateTime) {
+        Date dateObject = new Date(dateTime);
+        return dateObject;
+    }
+
+    @Override
+    public int compareTo(GdData comparePost) {
+
+        return getDateObject(mDateTime).compareTo(getDateObject(comparePost.getDateTime()));
     }
 }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,18 +14,30 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 1;
-
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -53,14 +66,69 @@ public class DashboardActivity extends AppCompatActivity {
     };
 
     private FloatingActionButton mFab;
+    private LineChart mChart;
+
+    private List<Entry> mEntries = new ArrayList<>();
+    private ArrayList<Event> mGdDataList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private EventAdapter mDataAdapter;
+
+    private String mUsername, mUserId;
+
+    // Firebase instance variables
+    private FirebaseDatabase mFirebasedatabase;
+    private DatabaseReference mGdDataDatabaseReference;
+    private ChildEventListener mChildEventListener;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        // Initialise firebase components
+        mFirebasedatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        mUsername = user.getDisplayName();
+        mUserId = user.getUid();
+        mGdDataDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
+
         // Assign variables to views
         mFab = findViewById(R.id.fab);
+        mChart = findViewById(R.id.chart);
+
+        // Add data to chart
+        addDummyData();
+
+        // add entries and styling to dataset
+        LineDataSet dataSet = new LineDataSet(mEntries, "Glucose Data");
+        dataSet.setColor(R.color.primary);
+        dataSet.setValueTextColor(R.color.primary_text);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setCubicIntensity(0.5f);
+        dataSet.setDrawFilled(true);
+
+        // add dataset to linedata object to be displayed on chart
+        LineData lineData = new LineData(dataSet);
+        //lineData.setValueFormatter(new MyValueFormatter());
+        mChart.setData(lineData);
+        mChart.invalidate(); // refresh
+
+        // axis formatting
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setDrawGridLines(false); //no gridlines
+        YAxis left = mChart.getAxisLeft();
+        left.setAxisMinimum(0);
+        left.setDrawGridLines(false); // no grid lines
+
+        // legend formatting
+        Legend legend = mChart.getLegend();
+        legend.setEnabled(false);
+
+        // modify the viewport
+
 
         // floating action button click listener
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -71,16 +139,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        Menu menu = navigation.getMenu();
-        MenuItem menuItem = menu.getItem(0);
-        menuItem.setChecked(true);
-
-
-        mFirebaseAuth = FirebaseAuth.getInstance();
-
+        // Authorization state listener
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -104,6 +163,33 @@ public class DashboardActivity extends AppCompatActivity {
             }
         };
 
+        // Attach the database read listener
+        attachDatabaseReadListener();
+
+        // Set up bottom navigation view
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        // Set up menu
+        Menu menu = navigation.getMenu();
+        MenuItem menuItem = menu.getItem(0);
+        menuItem.setChecked(true);
+
+    }
+
+    public void addDummyData() {
+
+        mEntries.add(new Entry(0, 0));
+        mEntries.add(new Entry(1, 1));
+        mEntries.add(new Entry(2, 4));
+        mEntries.add(new Entry(3, 9));
+        mEntries.add(new Entry(4, 10));
+        mEntries.add(new Entry(5, 9));
+        mEntries.add(new Entry(6, 4));
+        mEntries.add(new Entry(7, 5));
+        mEntries.add(new Entry(8, 6));
+        mEntries.add(new Entry(9, 8));
+        mEntries.add(new Entry(9, 11));
     }
 
     @Override
@@ -162,6 +248,8 @@ public class DashboardActivity extends AppCompatActivity {
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
+        mGdDataList.clear();
+        detachDatabaseReadListener();
     }
 
     @Override
@@ -169,4 +257,44 @@ public class DashboardActivity extends AppCompatActivity {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
+
+    private void attachDatabaseReadListener() {
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    mGdDataList.add(event);
+                    Collections.sort(mGdDataList);
+                    //mDataAdapter.notifyDataSetChanged();
+
+                    //mEntries.add(new Entry(0, 0))
+                    //mChart.notifyDataSetChanged();
+                    //mChart.invalidate();
+
+                }
+
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mChildEventListener != null) {
+            mGdDataDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+    }
+
 }
