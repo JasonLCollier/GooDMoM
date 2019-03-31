@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -91,8 +92,14 @@ public class DashboardActivity extends AppCompatActivity {
         mFirebasedatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
-        mUsername = user.getDisplayName();
-        mUserId = user.getUid();
+        if (user != null) {
+            mUsername = user.getDisplayName();
+            mUserId = user.getUid();
+        }
+        else {
+            mUsername =  "Unauthorized";
+            mUserId = "Unauthorized";
+        }
         mGdDataDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
 
         // Assign variables to views
@@ -104,11 +111,16 @@ public class DashboardActivity extends AppCompatActivity {
 
         // add entries and styling to dataset
         LineDataSet dataSet = new LineDataSet(mEntries, "Glucose Data");
-        dataSet.setColor(R.color.primary);
         dataSet.setValueTextColor(R.color.primary_text);
+        dataSet.setValueTextSize(16);
+        dataSet.setColor(R.color.primary);
+        dataSet.setLineWidth(4);
+        dataSet.setCircleColor(R.color.primary);
+        dataSet.setCircleRadius(8);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCubicIntensity(0.5f);
+        dataSet.setCubicIntensity(0.1f);
         dataSet.setDrawFilled(true);
+        dataSet.setFillColor(R.color.primary_light);
 
         // add dataset to linedata object to be displayed on chart
         LineData lineData = new LineData(dataSet);
@@ -116,12 +128,31 @@ public class DashboardActivity extends AppCompatActivity {
         mChart.setData(lineData);
         mChart.invalidate(); // refresh
 
+        // no data text
+        mChart.setNoDataText("No data available - add a new entry");
+        mChart.setNoDataTextColor(R.color.primary);
+
+        // description formatting
+        Description description = new Description();
+        description.setText("Blood Glucose");
+        description.setTextSize(16);
+        description.setTextColor(R.color.primary);
+        //description.setPosition(1f, 1f);
+        mChart.setDescription(description);
+
+       // borders and gridlines formatting
+        mChart.setDrawBorders(true);
+
         // axis formatting
         XAxis xAxis = mChart.getXAxis();
         xAxis.setDrawGridLines(false); //no gridlines
+        xAxis.setDrawLabels(false);
         YAxis left = mChart.getAxisLeft();
         left.setAxisMinimum(0);
         left.setDrawGridLines(false); // no grid lines
+        YAxis right = mChart.getAxisRight();
+        right.setDrawGridLines(false);
+        right.setDrawLabels(false);
 
         // legend formatting
         Legend legend = mChart.getLegend();
