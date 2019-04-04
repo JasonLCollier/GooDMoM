@@ -67,7 +67,7 @@ public class GdData implements Comparable<GdData> {
         mLocation = location;
     }
 
-    public void setmGlucose(double glucose) {
+    public void setGlucose(double glucose) {
         this.mGlucose = glucose;
     }
 
@@ -87,11 +87,11 @@ public class GdData implements Comparable<GdData> {
         mActivityDescription = activityDescription;
     }
 
-    public void setmMedication(String mMedication) {
+    public void setMedication(String mMedication) {
         this.mMedication = mMedication;
     }
 
-    public void setmWeight(double mWeight) {
+    public void setWeight(double mWeight) {
         this.mWeight = mWeight;
     }
 

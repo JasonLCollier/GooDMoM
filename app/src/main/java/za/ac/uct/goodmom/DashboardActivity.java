@@ -70,7 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
     private LineChart mChart;
 
     private List<Entry> mEntries = new ArrayList<>();
-    private ArrayList<Event> mGdDataList = new ArrayList<>();
+    private ArrayList<GdData> mGdDataList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private EventAdapter mDataAdapter;
 
@@ -100,7 +100,7 @@ public class DashboardActivity extends AppCompatActivity {
             mUsername =  "Unauthorized";
             mUserId = "Unauthorized";
         }
-        mGdDataDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
+        mGdDataDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);
@@ -145,8 +145,9 @@ public class DashboardActivity extends AppCompatActivity {
 
         // axis formatting
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setDrawGridLines(false); //no gridlines
-        xAxis.setDrawLabels(false);
+        xAxis.setDrawGridLines(false); //no grid lines
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawAxisLine(true);
         YAxis left = mChart.getAxisLeft();
         left.setAxisMinimum(0);
         left.setDrawGridLines(false); // no grid lines
@@ -195,7 +196,7 @@ public class DashboardActivity extends AppCompatActivity {
         };
 
         // Attach the database read listener
-        attachDatabaseReadListener();
+        //attachDatabaseReadListener();
 
         // Set up bottom navigation view
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -210,7 +211,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     public void addDummyData() {
 
-        mEntries.add(new Entry(0, 0));
+        mEntries.add(new Entry(0, 1));
         mEntries.add(new Entry(1, 1));
         mEntries.add(new Entry(2, 4));
         mEntries.add(new Entry(3, 9));
@@ -294,12 +295,12 @@ public class DashboardActivity extends AppCompatActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    mGdDataList.add(event);
+                    GdData data = dataSnapshot.getValue(GdData.class);
+                    mGdDataList.add(data);
                     Collections.sort(mGdDataList);
                     //mDataAdapter.notifyDataSetChanged();
 
-                    //mEntries.add(new Entry(0, 0))
+                    //mEntries.add(new Entry(0, (float)data.getGlucose()));
                     //mChart.notifyDataSetChanged();
                     //mChart.invalidate();
 
