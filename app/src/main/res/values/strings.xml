@@ -96,4 +96,32 @@
     <string name="body_weight_unit">kilograms</string>
     <string name="medication">Medication</string>
 
+    <string-array name="month_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string-array name="period_array">
+        <item>Day</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+
+    <string-array name="chart_type_array">
+        <item>Glucose</item>
+        <item>Calories</item>
+        <item>Activity</item>
+        <item>Weight</item>
+    </string-array>
+
 </resources>

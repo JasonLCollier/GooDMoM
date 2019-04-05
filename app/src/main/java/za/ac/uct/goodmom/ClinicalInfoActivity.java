@@ -36,7 +36,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         mSaveButton = findViewById(R.id.save_button);
         mHpSurnameText = findViewById(R.id.hp_surname);
         mHpNumberText = findViewById(R.id.hp_number);
-        mDueDateText = findViewById(R.id.due_date);
+        mDueDateText = findViewById(R.id.due_date_display_text_view);
 
         // Initialise Firebase components
         mFirebasedatabase = FirebaseDatabase.getInstance();

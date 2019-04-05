@@ -11,6 +11,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -34,6 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,6 +75,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     private FloatingActionButton mFab;
     private LineChart mChart;
+    private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner;
+    private ProgressBar mProgressBar;
+    private TextView mDueDate;
+
     private LineDataSet mDataSet;
     private LineData mLineData;
 
@@ -78,6 +88,7 @@ public class DashboardActivity extends AppCompatActivity {
     private EventAdapter mDataAdapter;
 
     private String mUsername, mUserId;
+    private int mYear, mMonth, mDay, mMonthOfYear;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -109,9 +120,65 @@ public class DashboardActivity extends AppCompatActivity {
         // Assign variables to views
         mFab = findViewById(R.id.fab);
         mChart = findViewById(R.id.chart);
+        mChartTypeSpinner = findViewById(R.id.chart_type);
+        mPeriodSpinner = findViewById(R.id.period);
+        mMonthSpinner = findViewById(R.id.month);
+        mProgressBar = findViewById((R.id.progress_bar));
+        mDueDate = findViewById(R.id.due_date_display_text_view);
 
-        //Initialise chart
+        // Calender class's instance and get current date , month and year from calender
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR); // current year
+        mMonth = c.get(Calendar.MONTH); // current month
+        mDay = c.get(Calendar.DAY_OF_MONTH); // current day
+
+        // Initialise mMonthOfYear selector to current month
+        mMonthOfYear = mMonth;
+
+        // Initialise chart
         initialiseChart();
+
+        // Initialise progress bar and due date
+        initialiseProgressBar();
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.chart_type_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mChartTypeSpinner.setAdapter(adapter);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.period_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mPeriodSpinner.setAdapter(adapter);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.month_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mMonthSpinner.setAdapter(adapter);
+        // Default selection on current month
+        mMonthSpinner.setSelection(mMonth);
+
+        mMonthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mMonthOfYear = position;
+                updateChart();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mMonthOfYear = mMonth;
+            }
+        });
 
         // floating action button click listener
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +227,17 @@ public class DashboardActivity extends AppCompatActivity {
 
     }
 
+    private void updateChart() {
+        mEntries.clear();
+
+        for (int i = 0; i < mGdDataList.size(); i++) {
+            if (mGdDataList.get(i).getMonth() - 1 == mMonthOfYear)
+                mEntries.add(new Entry((float) mGdDataList.get(i).getHoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+        }
+
+        initialiseChart();
+    }
+
     private void initialiseChart() {
         // add entries and styling to dataset
         mDataSet = new LineDataSet(mEntries, "Glucose Data");
@@ -168,14 +246,16 @@ public class DashboardActivity extends AppCompatActivity {
         mDataSet.setColor(R.color.primary);
         mDataSet.setLineWidth(4);
         mDataSet.setCircleColor(R.color.primary);
-        mDataSet.setCircleRadius(8);
+        mDataSet.setCircleRadius(4);
         mDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         mDataSet.setCubicIntensity(0.1f);
         mDataSet.setDrawFilled(true);
         mDataSet.setFillColor(R.color.primary_light);
+        mDataSet.setDrawValues(false);
 
         // add dataset to linedata object to be displayed on chart
         mLineData = new LineData(mDataSet);
+        mLineData.setValueFormatter(new CustomValueFormatter());
         mChart.setData(mLineData);
         mChart.invalidate(); // refresh
 
@@ -185,46 +265,55 @@ public class DashboardActivity extends AppCompatActivity {
 
         // description formatting
         Description description = new Description();
-        description.setText("Glucose");
+        description.setText(""); // Remove description
         description.setTextSize(16);
         description.setTextColor(R.color.primary);
-        description.setPosition(110, 45);
+        description.setPosition(150, 45);
         mChart.setDescription(description);
 
         // axis formatting
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawLabels(true);
+        xAxis.setValueFormatter(new CustomXAxisValueFormatter());
+        xAxis.setAxisMinimum(0);
+        xAxis.setAxisMaximum(31 * 24);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularity(5 * 24);
+
         YAxis left = mChart.getAxisLeft();
         left.setDrawGridLines(false);
-        left.setDrawLabels(false);
-        left.setDrawAxisLine(false);
+        left.setDrawAxisLine(true);
+        left.setDrawLabels(true);
+        left.setAxisMinimum(3);
+        left.setAxisMaximum(12);
+        left.setGranularityEnabled(true);
+        left.setGranularity(1);
+
         YAxis right = mChart.getAxisRight();
         right.setDrawGridLines(false);
-        right.setDrawLabels(false);
         right.setDrawAxisLine(false);
+        right.setDrawLabels(false);
+        right.setAxisMinimum(3);
+        right.setAxisMaximum(12);
+        right.setGranularityEnabled(true);
+        right.setGranularity(1);
 
         // legend formatting
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
 
-        // modify the viewport
-
     }
 
-    public void addDummyData() {
+    private void initialiseProgressBar() {
+        // get due date in milliseconds
+        // set due date text
+        // get current date in milliseconds
+        // max is 9 months in milliseconds
+        // progress is due - current / 9 months
 
-        mEntries.add(new Entry(0, 1));
-        mEntries.add(new Entry(1, 1));
-        mEntries.add(new Entry(2, 4));
-        mEntries.add(new Entry(3, 9));
-        mEntries.add(new Entry(4, 10));
-        mEntries.add(new Entry(5, 9));
-        mEntries.add(new Entry(6, 4));
-        mEntries.add(new Entry(7, 5));
-        mEntries.add(new Entry(8, 6));
-        mEntries.add(new Entry(9, 8));
     }
 
     @Override
@@ -291,6 +380,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        attachDatabaseReadListener();
     }
 
     private void attachDatabaseReadListener() {
@@ -303,9 +393,9 @@ public class DashboardActivity extends AppCompatActivity {
                     Collections.sort(mGdDataList);
                     //mDataAdapter.notifyDataSetChanged();
 
-                    mEntries.add(new Entry((float) data.getDateTime(), (float) data.getGlucose()));
-                    //mChart.notifyDataSetChanged();
-                    //mChart.invalidate();
+                    // add data to entries list if it is from the selected month
+                    if (data.getMonth() - 1 == mMonthOfYear)
+                        mEntries.add(new Entry((float) data.getHoursOfMonth(), (float) data.getGlucose()));
 
                 }
 
