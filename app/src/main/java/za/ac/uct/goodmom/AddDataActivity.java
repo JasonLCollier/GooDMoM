@@ -268,7 +268,7 @@ public class AddDataActivity extends AppCompatActivity {
                 mMedication = mMedicationText.getText().toString();
 
                 // Create new GdData Object
-                mNewData = new GdData(mGlucose, 0, mWeight, 0, "",
+                mNewData = new GdData(mGlucose, 0, mWeight, convertTimeToLong(mDateTime), "",
                         mMealDescr, mActivityDescr, mMedication, mCarbs);
 
                 // Push new event to database
@@ -283,7 +283,7 @@ public class AddDataActivity extends AppCompatActivity {
 
     }
 
-    public String formatDisplayDate(String srcDate) {
+    private String formatDisplayDate(String srcDate) {
         String destString = null;
 
         SimpleDateFormat srcFormat = new SimpleDateFormat("d/M/yyyy/HH:mm");
@@ -300,7 +300,7 @@ public class AddDataActivity extends AppCompatActivity {
 
     }
 
-    public String createTimeString(int hour, int minute) {
+    private String createTimeString(int hour, int minute) {
         String timeStr;
 
         if (hour < 10)
@@ -316,6 +316,20 @@ public class AddDataActivity extends AppCompatActivity {
             timeStr += minute;
 
         return timeStr;
+    }
+
+    private long convertTimeToLong(String srcDate) {
+        Date date = null;
+        SimpleDateFormat srcFormat = new SimpleDateFormat("d/M/yyyy/HH:mm");
+
+        try {
+            date = srcFormat.parse(srcDate);
+        } catch (ParseException e) {
+
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+
+        return date.getTime();
     }
 
 }

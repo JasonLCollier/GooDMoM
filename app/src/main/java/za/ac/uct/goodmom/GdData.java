@@ -1,5 +1,6 @@
 package za.ac.uct.goodmom;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GdData implements Comparable<GdData> {
@@ -98,6 +99,11 @@ public class GdData implements Comparable<GdData> {
     public Date getDateObject(long dateTime) {
         Date dateObject = new Date(dateTime);
         return dateObject;
+    }
+
+    public String getDateString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+        return sdf.format(new Date(mDateTime));
     }
 
     @Override

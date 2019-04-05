@@ -30,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +69,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     private FloatingActionButton mFab;
     private LineChart mChart;
+    private LineDataSet mDataSet;
+    private LineData mLineData;
 
     private List<Entry> mEntries = new ArrayList<>();
     private ArrayList<GdData> mGdDataList = new ArrayList<>();
@@ -80,6 +83,7 @@ public class DashboardActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mGdDataDatabaseReference;
     private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -106,61 +110,8 @@ public class DashboardActivity extends AppCompatActivity {
         mFab = findViewById(R.id.fab);
         mChart = findViewById(R.id.chart);
 
-        // Add data to chart
-        addDummyData();
-
-        // add entries and styling to dataset
-        LineDataSet dataSet = new LineDataSet(mEntries, "Glucose Data");
-        dataSet.setValueTextColor(R.color.primary_text);
-        dataSet.setValueTextSize(16);
-        dataSet.setColor(R.color.primary);
-        dataSet.setLineWidth(4);
-        dataSet.setCircleColor(R.color.primary);
-        dataSet.setCircleRadius(8);
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCubicIntensity(0.1f);
-        dataSet.setDrawFilled(true);
-        dataSet.setFillColor(R.color.primary_light);
-
-        // add dataset to linedata object to be displayed on chart
-        LineData lineData = new LineData(dataSet);
-        //lineData.setValueFormatter(new MyValueFormatter());
-        mChart.setData(lineData);
-        mChart.invalidate(); // refresh
-
-        // no data text
-        mChart.setNoDataText("No data available - add a new entry");
-        mChart.setNoDataTextColor(R.color.primary);
-
-        // description formatting
-        Description description = new Description();
-        description.setText("Blood Glucose");
-        description.setTextSize(16);
-        description.setTextColor(R.color.primary);
-        //description.setPosition(1f, 1f);
-        mChart.setDescription(description);
-
-       // borders and gridlines formatting
-        mChart.setDrawBorders(true);
-
-        // axis formatting
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setDrawGridLines(false); //no grid lines
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawAxisLine(true);
-        YAxis left = mChart.getAxisLeft();
-        left.setAxisMinimum(0);
-        left.setDrawGridLines(false); // no grid lines
-        YAxis right = mChart.getAxisRight();
-        right.setDrawGridLines(false);
-        right.setDrawLabels(false);
-
-        // legend formatting
-        Legend legend = mChart.getLegend();
-        legend.setEnabled(false);
-
-        // modify the viewport
-
+        //Initialise chart
+        initialiseChart();
 
         // floating action button click listener
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -195,8 +146,8 @@ public class DashboardActivity extends AppCompatActivity {
             }
         };
 
-        // Attach the database read listener
-        //attachDatabaseReadListener();
+        // Attach the database read listener and check when all data has been synchronised
+        attachDatabaseReadListener();
 
         // Set up bottom navigation view
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -206,6 +157,59 @@ public class DashboardActivity extends AppCompatActivity {
         Menu menu = navigation.getMenu();
         MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
+
+    }
+
+    private void initialiseChart() {
+        // add entries and styling to dataset
+        mDataSet = new LineDataSet(mEntries, "Glucose Data");
+        mDataSet.setValueTextColor(R.color.primary_text);
+        mDataSet.setValueTextSize(16);
+        mDataSet.setColor(R.color.primary);
+        mDataSet.setLineWidth(4);
+        mDataSet.setCircleColor(R.color.primary);
+        mDataSet.setCircleRadius(8);
+        mDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        mDataSet.setCubicIntensity(0.1f);
+        mDataSet.setDrawFilled(true);
+        mDataSet.setFillColor(R.color.primary_light);
+
+        // add dataset to linedata object to be displayed on chart
+        mLineData = new LineData(mDataSet);
+        mChart.setData(mLineData);
+        mChart.invalidate(); // refresh
+
+        // no data text
+        mChart.setNoDataText("No data available - add a new entry");
+        mChart.setNoDataTextColor(R.color.primary);
+
+        // description formatting
+        Description description = new Description();
+        description.setText("Glucose");
+        description.setTextSize(16);
+        description.setTextColor(R.color.primary);
+        description.setPosition(110, 45);
+        mChart.setDescription(description);
+
+        // axis formatting
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawLabels(true);
+        YAxis left = mChart.getAxisLeft();
+        left.setDrawGridLines(false);
+        left.setDrawLabels(false);
+        left.setDrawAxisLine(false);
+        YAxis right = mChart.getAxisRight();
+        right.setDrawGridLines(false);
+        right.setDrawLabels(false);
+        right.setDrawAxisLine(false);
+
+        // legend formatting
+        Legend legend = mChart.getLegend();
+        legend.setEnabled(false);
+
+        // modify the viewport
 
     }
 
@@ -221,7 +225,6 @@ public class DashboardActivity extends AppCompatActivity {
         mEntries.add(new Entry(7, 5));
         mEntries.add(new Entry(8, 6));
         mEntries.add(new Entry(9, 8));
-        mEntries.add(new Entry(9, 11));
     }
 
     @Override
@@ -300,7 +303,7 @@ public class DashboardActivity extends AppCompatActivity {
                     Collections.sort(mGdDataList);
                     //mDataAdapter.notifyDataSetChanged();
 
-                    //mEntries.add(new Entry(0, (float)data.getGlucose()));
+                    mEntries.add(new Entry((float) data.getDateTime(), (float) data.getGlucose()));
                     //mChart.notifyDataSetChanged();
                     //mChart.invalidate();
 
@@ -319,6 +322,25 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             };
             mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
+
+            if (mValueEventListener == null) {
+                mValueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // Value events are always triggered last
+                        // and are guaranteed to contain updates from any other events
+                        // which occurred before that snapshot was taken
+                        initialiseChart();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mGdDataDatabaseReference.addListenerForSingleValueEvent(mValueEventListener);
+
         }
     }
 
@@ -326,6 +348,10 @@ public class DashboardActivity extends AppCompatActivity {
         if (mChildEventListener != null) {
             mGdDataDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
+        }
+        if (mValueEventListener != null) {
+            mGdDataDatabaseReference.removeEventListener(mValueEventListener);
+            mValueEventListener = null;
         }
     }
 
