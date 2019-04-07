@@ -98,22 +98,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/due_date_display_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/due_date_display_text" />
 
-        <EditText
-            android:id="@+id/due_date_display_text_view"
+        <TextView
+            android:id="@+id/due_date_display_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:ems="10"
-            android:hint="e.g. 31/01/2020"
-            android:inputType="date"
+            android:textColor="@color/primary_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/due_date_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/due_date_text_view"
+            tools:text="Sun, 7 April 2019" />
 
         <ImageView
             android:id="@+id/info"

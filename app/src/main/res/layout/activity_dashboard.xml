@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dashboard_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:minHeight="250dp"
     tools:context=".DashboardActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -21,8 +23,15 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.65" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
     <TextView
-        android:id="@+id/due_date_display_text_view"
+        android:id="@+id/due_date_display_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -44,7 +53,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:progress="1"
-        app:layout_constraintEnd_toStartOf="@+id/due_date_display_text_view"
+        app:layout_constraintEnd_toStartOf="@+id/due_date_display_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,8 +101,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/display_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/month" />
@@ -110,15 +119,119 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/baseline_add_24" />
 
+    <LinearLayout
+        android:id="@+id/display_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/text_container"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/glucose_display_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_circle"
+            android:gravity="center"
+            android:textColor="@color/icons"
+            tools:text="5.7 mmol/L" />
+
+        <TextView
+            android:id="@+id/carb_display_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_circle"
+            android:gravity="center"
+            android:textColor="@color/icons"
+            tools:text="8500 carbs" />
+
+        <TextView
+            android:id="@+id/activity_time_display_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_circle"
+            android:gravity="center"
+            android:textColor="@color/icons"
+            tools:text="800 min" />
+
+        <TextView
+            android:id="@+id/weight_display_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_circle"
+            android:gravity="center"
+            android:textColor="@color/icons"
+            tools:text="70.5 Kg" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/avg_glucose_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/avg_glucose"
+            android:textColor="@color/primary" />
+
+        <TextView
+            android:id="@+id/tot_carbs_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/tot_carbs"
+            android:textColor="@color/primary" />
+
+        <TextView
+            android:id="@+id/tot_exercise_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/tot_act_time"
+            android:textColor="@color/primary" />
+
+        <TextView
+            android:id="@+id/avg_weight_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/avg_weight"
+            android:textColor="@color/primary" />
+    </LinearLayout>
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
         app:itemBackground="?attr/windowActionBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigation" />
 

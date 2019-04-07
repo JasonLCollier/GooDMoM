@@ -31,18 +31,18 @@
     <!-- Strings related to the messenger -->
     <string name="send_button_label">Send</string>
 
-    <!-- Strings related to forms -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_log_in">Log in or register</string>
-    <string name="action_log_in_short">Log in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <!-- Strings related to sign up -->
+    <string-array name="province_array">
+        <item>Eastern Cape</item>
+        <item>Free State</item>
+        <item>Gauteng</item>
+        <item>Kwazulu Natal</item>
+        <item>Mpumalanga</item>
+        <item>Limpopo</item>
+        <item>North West</item>
+        <item>Northern Cape</item>
+        <item>Western Cape</item>
+    </string-array>
 
     <!-- Strings related to Settings -->
 
@@ -91,10 +91,15 @@
     <string name="carbs">Carbs</string>
     <string name="carbs_unit">grams</string>
     <string name="activity">Activity</string>
-    <string name="activity_time_hint">hh:mm</string>
+    <string name="hrs">hrs</string>
+    <string name="min">min</string>
     <string name="body_weight">Weight</string>
     <string name="body_weight_unit">kilograms</string>
     <string name="medication">Medication</string>
+    <string name="avg_glucose">Average Glucose</string>
+    <string name="tot_carbs">Total Carbs</string>
+    <string name="tot_act_time">Total Exercise</string>
+    <string name="avg_weight">Average Weight</string>
 
     <string-array name="month_array">
         <item>January</item>
@@ -122,6 +127,14 @@
         <item>Calories</item>
         <item>Activity</item>
         <item>Weight</item>
+    </string-array>
+
+    <string-array name="locations_array">
+        <item>Home</item>
+        <item>Work / School</item>
+        <item>Exercise Venue</item>
+        <item>Shopping Mall</item>
+        <item>Outdoor</item>
     </string-array>
 
 </resources>

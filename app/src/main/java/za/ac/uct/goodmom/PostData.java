@@ -59,7 +59,7 @@ public class PostData implements Comparable<PostData> {
 
     public Date getDateObject(String date) {
         Date dateObject = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy");
         try {
             dateObject = sdf.parse(date);
         } catch (ParseException e) {

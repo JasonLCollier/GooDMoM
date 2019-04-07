@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -32,18 +35,19 @@ public class AddDataActivity extends AppCompatActivity {
     public static final String LOG_TAG = AddDataActivity.class.getSimpleName();
 
     private EditText mMealDescrText, mActivityDescrText, mMedicationText, mDoubleNumberText;
-    private TextView mGlucoseText, mDateTimeText, mLocationText, mCarbsText, mActivityTimeText, mWeightText, mCancelButton, mOkButton;
-    private LinearLayout mGlucoseContainer, mTimeContainer, mLocationContainer, mCarbsContainer, mWeightContainer;
+    private TextView mGlucoseText, mDateTimeText, mCarbsText, mActHrsText, mActMinText, mWeightText, mCancelButton, mOkButton;
+    private LinearLayout mGlucoseContainer, mTimeContainer, mLocationContainer, mCarbsContainer, mWeightContainer, mActHrsContainer, mActMinContainer;
     private Button mAddDataButton;
 
     private DatePickerDialog mDatePickerDialog;
     private TimePickerDialog mTimePickerDialog;
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
+    private Spinner mLocationSpinner;
 
-    private String mMealDescr, mActivityDescr, mMedication, mDateTime, mLocation, mActivityTime, mGlucoseStr, mCarbsStr, mWeightStr;
-    private double mGlucose, mWeight;
-    private int  mCarbs, mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek;
+    private String mMealDescr, mActivityDescr, mMedication, mDateTime, mLocation, mActHrsStr, mActMinStr, mGlucoseStr, mCarbsStr, mWeightStr;
+    private double mGlucose, mWeight, mActTime;
+    private int mCarbs, mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek, mActHrs, mActMin;
 
     private GdData mNewData;
 
@@ -70,11 +74,12 @@ public class AddDataActivity extends AppCompatActivity {
         // Initialise references to views
         mGlucoseText = findViewById(R.id.glucose);
         mDateTimeText = findViewById(R.id.date_time);
-        mLocationText = findViewById(R.id.location);
+        mLocationSpinner = findViewById(R.id.location);
         mMealDescrText = findViewById(R.id.meal_val);
         mCarbsText = findViewById(R.id.carbs_val);
         mActivityDescrText = findViewById(R.id.activity_description_val);
-        mActivityTimeText = findViewById(R.id.activity_time_val);
+        mActHrsText = findViewById(R.id.act_time_hrs_val);
+        mActMinText = findViewById(R.id.act_time_min_val);
         mWeightText = findViewById(R.id.body_weight_val);
         mMedicationText = findViewById(R.id.medication_val);
         mAddDataButton = findViewById(R.id.add_data_button);
@@ -83,6 +88,8 @@ public class AddDataActivity extends AppCompatActivity {
         mLocationContainer = findViewById(R.id.location_container);
         mCarbsContainer = findViewById(R.id.carbs_container);
         mWeightContainer = findViewById(R.id.weight_container);
+        mActHrsContainer = findViewById(R.id.act_hrs_container);
+        mActMinContainer = findViewById(R.id.act_min_container);
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
@@ -98,9 +105,6 @@ public class AddDataActivity extends AppCompatActivity {
         // Initialise date time view
         mDateTime = mDay + "/" + (mMonth + 1) + "/" + mYear + "/" + createTimeString(mHour, mMinute);
         mDateTimeText.setText(formatDisplayDate(mDateTime));
-        // Initialise location view
-        mLocation = "Click to find location";
-        mLocationText.setText(mLocation);
         // Initialise carbs view
         mCarbsStr = "0";
         mCarbsText.setText(mCarbsStr);
@@ -175,8 +179,26 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
-        // On click listener for location value
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.locations_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mLocationSpinner.setAdapter(adapter);
 
+        // On click listener for location value
+        mLocationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mLocation = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mEventType = 0;
+            }
+        });
 
         // On click listener for weight value
         mWeightContainer.setOnClickListener(new View.OnClickListener() {
@@ -215,7 +237,85 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
-        // On click listener for activity time value
+        // On click listener for activity time hrs value
+        mActHrsContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(AddDataActivity.this);
+                mDialog.setContentView(R.layout.dialog_number_picker);
+
+                // Set up number picker
+                mNumberPicker = mDialog.findViewById(R.id.number_picker);
+                mNumberPicker.setMinValue(0);
+                mNumberPicker.setMaxValue(24);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the carbs value
+                        mActHrs = mNumberPicker.getValue();
+                        mActHrsStr = String.valueOf(mActHrs);
+                        mActHrsText.setText(mActHrsStr);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
+        // On click listener for activity time hrs value
+        mActMinContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(AddDataActivity.this);
+                mDialog.setContentView(R.layout.dialog_number_picker);
+
+                // Set up number picker
+                mNumberPicker = mDialog.findViewById(R.id.number_picker);
+                mNumberPicker.setMinValue(0);
+                mNumberPicker.setMaxValue(59);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the carbs value
+                        mActMin = mNumberPicker.getValue();
+                        mActMinStr = String.valueOf(mActMin);
+                        mActMinText.setText(mActMinStr);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
 
 
         //On click listener for carbs value
@@ -267,8 +367,10 @@ public class AddDataActivity extends AppCompatActivity {
                 mActivityDescr = mActivityDescrText.getText().toString();
                 mMedication = mMedicationText.getText().toString();
 
+                mActTime = (double) mActHrs + ((double) mActMin / (double) 60);
+
                 // Create new GdData Object
-                mNewData = new GdData(mGlucose, 0, mWeight, convertTimeToLong(mDateTime), "",
+                mNewData = new GdData(mGlucose, mActTime, mWeight, convertTimeToLong(mDateTime), mLocation,
                         mMealDescr, mActivityDescr, mMedication, mCarbs);
 
                 // Push new event to database

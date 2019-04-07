@@ -4,19 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class PersonalInfoActivity extends AppCompatActivity {
 
     private Button mSaveButton;
-    private EditText mIdText;
-    private EditText mEmailText;
-    private EditText mHouseText;
-    private EditText mStreetText;
-    private EditText mCityText;
-    private EditText mProvText;
-    private EditText mPostText;
+    String mProvince;
+    private EditText mIdText, mEmailText, mHouseText, mStreetText, mCityText, mPostText;
+    private Spinner mProvSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +29,27 @@ public class PersonalInfoActivity extends AppCompatActivity {
         mHouseText = findViewById(R.id.house_number);
         mStreetText = findViewById(R.id.street_name);
         mCityText = findViewById(R.id.city_name);
-        mProvText = findViewById(R.id.province_name);
+        mProvSpinner = findViewById(R.id.province_name);
         mPostText = findViewById(R.id.postal_code);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.province_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mProvSpinner.setAdapter(adapter);
+
+        mProvSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mProvince = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         // Set a click listener on that button
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +61,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
                 User newUser = new User();
                 newUser.setId(mIdText.getText().toString());
                 newUser.setEmail(mEmailText.getText().toString());
-                newUser.setAddress(Integer.parseInt(mHouseText.getText().toString()), mStreetText.getText().toString(), mCityText.getText().toString(), mProvText.getText().toString(), Integer.parseInt(mPostText.getText().toString()));
+                newUser.setAddress(Integer.parseInt(mHouseText.getText().toString()), mStreetText.getText().toString(), mCityText.getText().toString(), mProvince, Integer.parseInt(mPostText.getText().toString()));
 
                 // Write the user data to Firebase
                 //mUsersDatabaseReference.setValue(newUser);

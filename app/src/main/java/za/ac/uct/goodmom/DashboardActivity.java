@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,13 +38,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
+
+    public static final String LOG_TAG = DashboardActivity.class.getSimpleName();
 
     public static final int RC_SIGN_IN = 1;
 
@@ -77,7 +83,7 @@ public class DashboardActivity extends AppCompatActivity {
     private LineChart mChart;
     private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner;
     private ProgressBar mProgressBar;
-    private TextView mDueDate;
+    private TextView mDueDateText, mGlucoseText, mCarbText, mActivityTimeText, mWeightText;
 
     private LineDataSet mDataSet;
     private LineData mLineData;
@@ -87,14 +93,16 @@ public class DashboardActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private EventAdapter mDataAdapter;
 
+    private User mUser;
+
     private String mUsername, mUserId;
     private int mYear, mMonth, mDay, mMonthOfYear;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mGdDataDatabaseReference;
+    private DatabaseReference mGdDataDatabaseReference, mUsersDatabaseReference;
     private ChildEventListener mChildEventListener;
-    private ValueEventListener mValueEventListener;
+    private ValueEventListener mValueEventListener, mValueEventListenerForDD;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -116,6 +124,7 @@ public class DashboardActivity extends AppCompatActivity {
             mUserId = "Unauthorized";
         }
         mGdDataDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
+        mUsersDatabaseReference = mFirebasedatabase.getReference().child("users").child(mUserId);
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);
@@ -124,7 +133,16 @@ public class DashboardActivity extends AppCompatActivity {
         mPeriodSpinner = findViewById(R.id.period);
         mMonthSpinner = findViewById(R.id.month);
         mProgressBar = findViewById((R.id.progress_bar));
-        mDueDate = findViewById(R.id.due_date_display_text_view);
+        mDueDateText = findViewById(R.id.due_date_display_text);
+        mGlucoseText = findViewById(R.id.glucose_display_text);
+        mCarbText = findViewById(R.id.carb_display_text);
+        mActivityTimeText = findViewById(R.id.activity_time_display_text);
+        mWeightText = findViewById(R.id.weight_display_text);
+
+        // Initialise chart, progress bar, display text
+        initialiseProgressBar();
+        initialiseChart();
+        initialiseDisplayText();
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
@@ -134,12 +152,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Initialise mMonthOfYear selector to current month
         mMonthOfYear = mMonth;
-
-        // Initialise chart
-        initialiseChart();
-
-        // Initialise progress bar and due date
-        initialiseProgressBar();
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -236,6 +248,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         initialiseChart();
+        initialiseDisplayText();
     }
 
     private void initialiseChart() {
@@ -308,11 +321,71 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void initialiseProgressBar() {
-        // get due date in milliseconds
-        // set due date text
-        // get current date in milliseconds
-        // max is 9 months in milliseconds
-        // progress is due - current / 9 months
+
+        try {
+            // get due date in millis
+            long dueDate = mUser.getDueDate();
+
+            // set due date text
+            Date dueDateObj = new Date(dueDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy");
+            String dateText = sdf.format(dueDateObj);
+            mDueDateText.setText(dateText);
+
+            // get current date in millis
+            long curDate = System.currentTimeMillis();
+
+            // max is 9 months in milliseconds
+            long gestationPeriod = 24192000000L;
+
+            // progress is due - current / 9 months
+            float progress = ((float) (dueDate - curDate) / (float) gestationPeriod) * 100;
+            mProgressBar.setProgress(100 - (int) progress);
+        } catch (NullPointerException e) {
+            Log.e(LOG_TAG, "Error with pull parse", e);
+            mProgressBar.setProgress(0);
+        }
+
+    }
+
+    private void initialiseDisplayText() {
+        DecimalFormat df = new DecimalFormat("#.#");
+
+        String glucoseStr, carbsStr, activityStr, weightStr;
+
+        double glucose = 0;
+        int carbs = 0;
+        double activityTime = 0;
+        double weight = 0;
+        int count = 0;
+        int zeroWeightCount = 0; //checks if weight is not entered and does not inlude it in avg calc
+
+        for (int i = 0; i < mGdDataList.size(); i++) {
+            if (mGdDataList.get(i).getMonth() - 1 == mMonthOfYear) {
+                glucose += mGdDataList.get(i).getGlucose();
+                carbs += mGdDataList.get(i).getCarbs();
+                activityTime += mGdDataList.get(i).getActivityTime();
+                weight += mGdDataList.get(i).getWeight();
+                if (mGdDataList.get(i).getWeight() == 0)
+                    zeroWeightCount++;
+                count++;
+            }
+        }
+
+        if (count != 0) {
+            glucose = glucose / count;
+            weight = weight / (count - zeroWeightCount);
+        }
+
+        glucoseStr = df.format(glucose) + "\n mmol/L";
+        carbsStr = Integer.toString(carbs) + "\n g";
+        activityStr = df.format(activityTime) + "\n hrs";
+        weightStr = df.format(weight) + "\n Kg";
+
+        mGlucoseText.setText(glucoseStr);
+        mCarbText.setText(carbsStr);
+        mActivityTimeText.setText(activityStr);
+        mWeightText.setText(weightStr);
 
     }
 
@@ -420,7 +493,12 @@ public class DashboardActivity extends AppCompatActivity {
                         // Value events are always triggered last
                         // and are guaranteed to contain updates from any other events
                         // which occurred before that snapshot was taken
+
+                        // Initialise chart
                         initialiseChart();
+
+                        // Initialise display text
+                        initialiseDisplayText();
                     }
 
                     @Override
@@ -429,7 +507,25 @@ public class DashboardActivity extends AppCompatActivity {
                     }
                 };
             }
-            mGdDataDatabaseReference.addListenerForSingleValueEvent(mValueEventListener);
+            mGdDataDatabaseReference.addValueEventListener(mValueEventListener);
+
+            if (mValueEventListenerForDD == null) {
+                mValueEventListenerForDD = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mUser = dataSnapshot.getValue(User.class);
+
+                        // Initialise progress bar
+                        initialiseProgressBar();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
 
         }
     }
@@ -442,6 +538,10 @@ public class DashboardActivity extends AppCompatActivity {
         if (mValueEventListener != null) {
             mGdDataDatabaseReference.removeEventListener(mValueEventListener);
             mValueEventListener = null;
+        }
+        if (mValueEventListenerForDD != null) {
+            mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
+            mValueEventListenerForDD = null;
         }
     }
 

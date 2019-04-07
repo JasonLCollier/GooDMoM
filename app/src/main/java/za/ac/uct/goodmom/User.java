@@ -10,7 +10,7 @@ public class User implements Serializable {
     private String mAddress;
     private String mHpSurname;
     private String mHpNumber;
-    private String mDueDate;
+    private long mDueDate;
 
     public User() {
     }
@@ -71,11 +71,11 @@ public class User implements Serializable {
         mHpNumber = hpNumber;
     }
 
-    public String getDueDate() {
+    public long getDueDate() {
         return mDueDate;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(long dueDate) {
         mDueDate = dueDate;
     }
 }

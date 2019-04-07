@@ -27,9 +27,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class TipsActivity extends AppCompatActivity {
@@ -172,9 +174,20 @@ public class TipsActivity extends AppCompatActivity {
     /**
      * Returns a formatted date and time string for when the earthquake happened.
      */
-    private String getDateString(long timeInMilliseconds) {
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy 'at' HH:mm:ss z");
-        return formatter.format(timeInMilliseconds);
+    private String convertDateString(String srcDate) {
+        String destString = null;
+
+        SimpleDateFormat srcFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+        SimpleDateFormat destFormat = new SimpleDateFormat("EEE, d MMM yyyy");
+
+        try {
+            Date dateObj = srcFormat.parse(srcDate);
+            destString = destFormat.format(dateObj);
+        } catch (ParseException e) {
+
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+        return destString;
     }
 
     /**
@@ -291,7 +304,7 @@ public class TipsActivity extends AppCompatActivity {
                                 }
 
                                 else if(name.equals("pubDate")){
-                                    post.setDate(text);
+                                    post.setDate(convertDateString(text));
                                 }
 
                                 else if(name.equals("link")){
