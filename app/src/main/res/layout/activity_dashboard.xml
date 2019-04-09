@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.75" />
 
     <TextView
         android:id="@+id/due_date_display_text"
@@ -124,6 +124,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:minHeight="60dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/text_container"
         app:layout_constraintStart_toStartOf="parent">
@@ -181,7 +182,7 @@
         android:id="@+id/text_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/navigation"
         app:layout_constraintEnd_toEndOf="parent"

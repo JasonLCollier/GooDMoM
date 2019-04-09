@@ -168,6 +168,8 @@ public class DashboardActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         mPeriodSpinner.setAdapter(adapter);
+        // Default selection on month
+        mPeriodSpinner.setSelection(1);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         adapter = ArrayAdapter.createFromResource(this,
