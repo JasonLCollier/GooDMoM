@@ -69,7 +69,7 @@ public class AddDataActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mDataDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
+        mDataDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("gdData");
 
         // Initialise references to views
         mGlucoseText = findViewById(R.id.glucose);

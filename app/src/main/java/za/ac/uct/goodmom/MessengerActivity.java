@@ -86,7 +86,7 @@ public class MessengerActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("messages").child(mUserId);
+        mMessagesDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("messages");
 
         // Initialize references to views
         mProgressBar = findViewById(R.id.progress_bar);

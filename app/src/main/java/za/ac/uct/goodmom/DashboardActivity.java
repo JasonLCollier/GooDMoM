@@ -123,8 +123,8 @@ public class DashboardActivity extends AppCompatActivity {
             mUsername =  "Unauthorized";
             mUserId = "Unauthorized";
         }
-        mGdDataDatabaseReference = mFirebasedatabase.getReference().child("gdData").child(mUserId);
-        mUsersDatabaseReference = mFirebasedatabase.getReference().child("users").child(mUserId);
+        mGdDataDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("gdData");
+        mUsersDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("userData");
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);

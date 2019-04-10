@@ -59,7 +59,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
         mUsername = firebaseUser.getDisplayName();
         mUserId = firebaseUser.getUid();
-        mUsersDatabaseReference = mFirebasedatabase.getReference().child("users").child(mUserId);
+        mUsersDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("userData");
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();

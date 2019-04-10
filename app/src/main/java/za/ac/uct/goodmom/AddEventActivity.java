@@ -3,9 +3,9 @@ package za.ac.uct.goodmom;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -64,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mEventsDatabaseReference = mFirebasedatabase.getReference().child("events").child(mUserId);
+        mEventsDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("events");
 
         // Initialise references to views
         mTitleText = findViewById(R.id.title);
