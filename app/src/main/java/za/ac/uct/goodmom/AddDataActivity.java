@@ -69,7 +69,7 @@ public class AddDataActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mDataDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("gdData");
+        mDataDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("gdData");
 
         // Initialise references to views
         mGlucoseText = findViewById(R.id.glucose);
@@ -329,7 +329,7 @@ public class AddDataActivity extends AppCompatActivity {
                 // Set up number picker
                 mNumberPicker = mDialog.findViewById(R.id.number_picker);
                 mNumberPicker.setMinValue(0);
-                mNumberPicker.setMaxValue(1000);
+                mNumberPicker.setMaxValue(100);
 
                 mCancelButton = mDialog.findViewById(R.id.cancel_button);
                 mCancelButton.setOnClickListener(new View.OnClickListener() {

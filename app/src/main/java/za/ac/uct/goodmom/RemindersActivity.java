@@ -81,7 +81,7 @@ public class RemindersActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("events");
+        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("events");
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);

@@ -64,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mEventsDatabaseReference = mFirebasedatabase.getReference().child(mUserId).child("events");
+        mEventsDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("events");
 
         // Initialise references to views
         mTitleText = findViewById(R.id.title);
