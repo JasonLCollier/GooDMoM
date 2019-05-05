@@ -216,11 +216,9 @@ public class DashboardActivity extends AppCompatActivity {
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
-                                    .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.EmailBuilder().build(),
-                                            new AuthUI.IdpConfig.PhoneBuilder().build()))
+                                    .setAvailableProviders(Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build()))
                                     .setTheme(R.style.LoginTheme)
-                                    //.setLogo(R.drawable.pregnant)
+                                    .setLogo(R.drawable.logo)
                                     .build(),
                             RC_SIGN_IN);
                 }

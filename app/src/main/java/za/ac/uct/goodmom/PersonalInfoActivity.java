@@ -14,7 +14,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
 
     private Button mSaveButton;
     String mProvince;
-    private EditText mIdText, mEmailText, mHouseText, mStreetText, mCityText, mPostText;
+    private EditText mIdText, mPhoneText, mHouseText, mStreetText, mCityText, mPostText;
     private Spinner mProvSpinner;
 
     @Override
@@ -25,11 +25,11 @@ public class PersonalInfoActivity extends AppCompatActivity {
         // Initialize references to views
         mSaveButton = findViewById(R.id.save_button);
         mIdText = findViewById(R.id.id_number);
-        mEmailText = findViewById(R.id.email);
+        mPhoneText = findViewById(R.id.phone);
         mHouseText = findViewById(R.id.house_number);
         mStreetText = findViewById(R.id.street_name);
         mCityText = findViewById(R.id.city_name);
-        mProvSpinner = findViewById(R.id.province_name);
+        mProvSpinner = findViewById(R.id.province_name_spinner);
         mPostText = findViewById(R.id.postal_code);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -60,7 +60,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
                 // Create User object
                 User newUser = new User();
                 newUser.setId(mIdText.getText().toString());
-                newUser.setEmail(mEmailText.getText().toString());
+                newUser.setPhone(mPhoneText.getText().toString());
                 newUser.setAddress(Integer.parseInt(mHouseText.getText().toString()), mStreetText.getText().toString(), mCityText.getText().toString(), mProvince, Integer.parseInt(mPostText.getText().toString()));
 
                 // Write the user data to Firebase

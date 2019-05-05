@@ -44,6 +44,42 @@
         <item>Western Cape</item>
     </string-array>
 
+    <string-array name="hp_array">
+        <item>Obstetrician</item>
+        <item>General Practitioner</item>
+        <item>Midwife</item>
+    </string-array>
+
+    <string-array name="diabetes_array">
+        <item>Type 1 Diabetes</item>
+        <item>Type 2 Diabetes</item>
+        <item>Gestational Diabetes</item>
+    </string-array>
+
+    <string name="id">Identity Number</string>
+    <string name="id_hint">e.g. 0000000000000</string>
+    <string name="phone">Cellphone Number</string>
+    <string name="phone_hint">e.g. 0820000000</string>
+    <string name="house">House No.</string>
+    <string name="house_hint">e.g. 1</string>
+    <string name="street">Street</string>
+    <string name="street_hint">e.g. Main Road</string>
+    <string name="city">City</string>
+    <string name="city_hint">e.g. Cape Town</string>
+    <string name="province">Province</string>
+    <string name="post">Postal Code</string>
+    <string name="post_hint">e.g. 7700</string>
+
+    <string name="hp_surname">Healthcare Professional Surname</string>
+    <string name="hp_surname_hint">e.g. Barnard</string>
+    <string name="hp_uid">Healthcare Professional User ID</string>
+    <string name="hp_uid_hint">Enter the code given to you by your HP here</string>
+    <string name="hp_type">Healthcare Professional Type</string>
+    <string name="height">Height</string>
+    <string name="height_unit">cm</string>
+    <string name="diabetes_type">Diabetes Type</string>
+    <string name="due_date">Due Date</string>
+
     <!-- Strings related to Settings -->
 
     <!-- General settings -->

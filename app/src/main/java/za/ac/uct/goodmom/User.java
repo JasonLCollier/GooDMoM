@@ -11,6 +11,9 @@ public class User implements Serializable {
     private String mHpSurname;
     private String mHpNumber;
     private long mDueDate;
+    private String mHpType;
+    private int mHeight;
+    private String mDiabetesType;
 
     public User() {
     }
@@ -77,5 +80,29 @@ public class User implements Serializable {
 
     public void setDueDate(long dueDate) {
         mDueDate = dueDate;
+    }
+
+    public String getHpType() {
+        return mHpType;
+    }
+
+    public void setHpType(String hpType) {
+        mHpType = hpType;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
+    public void setHeight(int height) {
+        mHeight = height;
+    }
+
+    public String getDiabetesType() {
+        return mDiabetesType;
+    }
+
+    public void setDiabetesType(String diabetesType) {
+        mDiabetesType = diabetesType;
     }
 }

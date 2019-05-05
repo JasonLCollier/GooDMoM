@@ -1,14 +1,20 @@
 package za.ac.uct.goodmom;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,19 +33,23 @@ public class ClinicalInfoActivity extends AppCompatActivity {
     public static final String LOG_TAG = ClinicalInfoActivity.class.getSimpleName();
 
     private Button mSaveButton;
-    private EditText mHpSurnameText;
-    private EditText mHpNumberText;
-    private TextView mDueDateText;
+    private EditText mHpSurnameText, mHpNumberText;
+    private TextView mDueDateText, mHeightText, mCancelButton, mOkButton;
     private DatePickerDialog mDatePickerDialog;
+    private Spinner mHpSpinner, mDiabetesSpinner;
+    private LinearLayout mHeightContainer;
 
-    private int mYear, mMonth, mDay;
-    private String mDueDateString;
+    private Dialog mDialog;
+    private NumberPicker mNumberPicker;
 
-    private String mUsername, mUserId;
+    private int mYear, mMonth, mDay, mHeight;
+    private String mDueDateString, mHpTypeString, mDiabetesTypeString, mHeightString;
+
+    private String mUsername, mUserId, mEmail;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mUsersDatabaseReference;
+    private DatabaseReference mUsersDatabaseReference, mLinkedPatientsDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
 
     @Override
@@ -52,6 +62,13 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         mHpSurnameText = findViewById(R.id.hp_surname);
         mHpNumberText = findViewById(R.id.hp_number);
         mDueDateText = findViewById(R.id.due_date_display_text);
+        mHpSpinner = findViewById(R.id.hp_type_spinner);
+        mDiabetesSpinner = findViewById(R.id.diabetes_type_spinner);
+        mHeightContainer = findViewById(R.id.height_container);
+        mHeightText = findViewById(R.id.height_value);
+
+        // Initialise Height
+        mHeightText.setText("0");
 
         // Initialise Firebase components
         mFirebasedatabase = FirebaseDatabase.getInstance();
@@ -59,7 +76,46 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
         mUsername = firebaseUser.getDisplayName();
         mUserId = firebaseUser.getUid();
+        mEmail = firebaseUser.getEmail();
         mUsersDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("userData");
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.hp_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mHpSpinner.setAdapter(adapter);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.diabetes_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mDiabetesSpinner.setAdapter(adapter);
+
+        mHpSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mHpTypeString = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        mDiabetesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mDiabetesTypeString = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
@@ -91,24 +147,76 @@ public class ClinicalInfoActivity extends AppCompatActivity {
             }
         });
 
+        //On click listener for carbs value
+        mHeightContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(ClinicalInfoActivity.this);
+                mDialog.setContentView(R.layout.dialog_number_picker);
+
+                // Set up number picker
+                mNumberPicker = mDialog.findViewById(R.id.number_picker);
+                mNumberPicker.setMinValue(70);
+                mNumberPicker.setMaxValue(250);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the carbs value
+                        mHeight = mNumberPicker.getValue();
+                        mHeightString = String.valueOf(mHeight);
+                        mHeightText.setText(mHeightString);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
         // Set a click listener on that button
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             // The code in this method will be executed when the Log In button is clicked on.
             @Override
             public void onClick(View view) {
 
+                String hpNumber = mHpNumberText.getText().toString();
+
                 // Update user object
                 Intent userInfo = getIntent();
                 User newUser = (User) userInfo.getSerializableExtra("userObject");
                 newUser.setName(mUsername);
-                newUser.setPhone("0000000000");
+                newUser.setEmail(mEmail);
                 newUser.setHpSurname(mHpSurnameText.getText().toString());
-                newUser.setHpNumber(mHpNumberText.getText().toString());
+                newUser.setHpNumber(hpNumber);
+                newUser.setHpType(mHpTypeString);
+                newUser.setDiabetesType(mDiabetesTypeString);
+                newUser.setHeight(mHeight);
                 newUser.setDueDate(convertDateToMillis(mDueDateString));
-
 
                 // Write the user data to Firebase
                 mUsersDatabaseReference.setValue(newUser);
+
+                // Create LinkedPatient object
+                LinkedPatient newLinkedPatient = new LinkedPatient();
+                newLinkedPatient.setPatientId(mUserId);
+
+                // Write current users's ID to LinkedPatient's linked patients list
+                mLinkedPatientsDatabaseReference = mFirebasedatabase.getReference().child("doctors").child(hpNumber).child("linkedPatients");
+                mLinkedPatientsDatabaseReference.push().setValue(newLinkedPatient);
 
                 // Create a new intent to open the activity
                 Intent dashboardIntent = new Intent(ClinicalInfoActivity.this, DashboardActivity.class);
