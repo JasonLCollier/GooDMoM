@@ -1,35 +1,50 @@
 package za.ac.uct.goodmom;
 
-import android.app.Activity;
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class MessageAdapter extends ArrayAdapter<Message> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
 
-    public MessageAdapter(Context context, int resource, List<Message> objects) {
-        super(context, resource, objects);
+    private List<Message> mMessageList;
+
+    public MessageAdapter(List<Message> messageList) {
+        mMessageList = messageList;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
+    public MessageAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message, parent, false);
+
+        return new MessageAdapter.MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(MessageAdapter.MyViewHolder holder, int position) {
+        Message message = mMessageList.get(position);
+
+        holder.messageTextView.setText(message.getText());
+        holder.authorTextView.setText(message.getName());
+    }
+
+    @Override
+    public int getItemCount() {
+        return mMessageList.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView messageTextView, authorTextView;
+
+        public MyViewHolder(View view) {
+            super(view);
+            messageTextView = view.findViewById(R.id.message_text_view);
+            authorTextView = view.findViewById(R.id.name_text_view);
         }
-
-        TextView messageTextView = (TextView) convertView.findViewById(R.id.message_text_view);
-        TextView authorTextView = (TextView) convertView.findViewById(R.id.name_text_view);
-
-        Message message = getItem(position);
-
-        messageTextView.setText(message.getText());
-        authorTextView.setText(message.getName());
-
-        return convertView;
     }
 
 }

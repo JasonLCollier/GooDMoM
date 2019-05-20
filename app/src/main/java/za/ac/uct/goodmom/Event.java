@@ -147,7 +147,7 @@ public class Event implements Parcelable, Comparable<Event> {
     @Override
     public int compareTo(Event comparePost) {
 
-        return getDateObject(mStartDateTime).compareTo(getDateObject(comparePost.getStartDateTime()));
+        return getDateObject(comparePost.getStartDateTime()).compareTo(getDateObject(mStartDateTime));
     }
 
 }

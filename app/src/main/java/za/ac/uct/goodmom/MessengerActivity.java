@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -14,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.firebase.ui.auth.AuthUI;
@@ -27,14 +29,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
 
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
 
-    private ListView mMessageListView;
+    private ArrayList<Message> mMessagetList;
+    private RecyclerView mMessageRecyclerView;
     private MessageAdapter mMessageAdapter;
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
@@ -90,14 +92,21 @@ public class MessengerActivity extends AppCompatActivity {
 
         // Initialize references to views
         mProgressBar = findViewById(R.id.progress_bar);
-        mMessageListView = findViewById(R.id.message_list_view);
+        mMessageRecyclerView = findViewById(R.id.recycler_view);
         mMessageEditText = findViewById(R.id.message_edit_text);
         mSendButton = findViewById(R.id.send_button);
 
-        // Initialize message ListView and its adapter
-        List<Message> messages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, messages);
-        mMessageListView.setAdapter(mMessageAdapter);
+        mMessagetList = new ArrayList<>();
+        mMessageAdapter = new MessageAdapter(mMessagetList);
+
+        // Set up the recycler view
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        mMessageRecyclerView.setLayoutManager(mLayoutManager);
+        mMessageRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mMessageRecyclerView.addItemDecoration(new CustomDividerItemDecoration(this, LinearLayoutManager.VERTICAL, 16));
+
+        // set the adapter
+        mMessageRecyclerView.setAdapter(mMessageAdapter);
 
         // Enable Send button when there's text to send
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -178,13 +187,13 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mMessageAdapter.clear();
+        mMessagetList.clear();
         detachDatabaseReadListener();
     }
 
     private void onSignedOutCleanup() {
         mUsername = ANONYMOUS;
-        mMessageAdapter.clear();
+        mMessagetList.clear();
         detachDatabaseReadListener();
     }
 
@@ -194,7 +203,11 @@ public class MessengerActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Message message = dataSnapshot.getValue(Message.class);
-                    mMessageAdapter.add(message);
+                    mMessagetList.add(message);
+
+                    mMessageRecyclerView.smoothScrollToPosition(mMessagetList.size() - 1);
+
+                    mMessageAdapter.notifyDataSetChanged();
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {

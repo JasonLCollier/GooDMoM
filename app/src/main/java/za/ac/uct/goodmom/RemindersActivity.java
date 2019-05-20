@@ -57,15 +57,15 @@ public class RemindersActivity extends AppCompatActivity {
 
     private FloatingActionButton mFab;
 
-    private ArrayList<Event> mEventList = new ArrayList<>();
-    private RecyclerView mRecyclerView;
+    private ArrayList<Event> mEventList;
+    private RecyclerView mEventRecyclerView;
     private EventAdapter mEventAdapter;
 
     private String mUsername, mUserId;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mMessagesDatabaseReference;
+    private DatabaseReference mEventsDatabaseReference;
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
 
@@ -75,29 +75,31 @@ public class RemindersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reminders);
 
         // Initialise Firebase components
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebasedatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
-        mMessagesDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("events");
+        mEventsDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("events");
+
+        // initialise variables
+        mEventList = new ArrayList<>();
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);
-        mRecyclerView = findViewById(R.id.recycler_view);
+        mEventRecyclerView = findViewById(R.id.recycler_view);
         mEventAdapter = new EventAdapter(mEventList);
 
         // Set up the recycler view
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mEventRecyclerView.setLayoutManager(mLayoutManager);
+        mEventRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // set the adapter
-        mRecyclerView.setAdapter(mEventAdapter);
+        mEventRecyclerView.setAdapter(mEventAdapter);
 
         // row click listener
-        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
+        mEventRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mEventRecyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 Event event = mEventList.get(position);
@@ -171,6 +173,7 @@ public class RemindersActivity extends AppCompatActivity {
                     Event event = dataSnapshot.getValue(Event.class);
                     mEventList.add(event);
                     Collections.sort(mEventList);
+
                     mEventAdapter.notifyDataSetChanged();
                 }
 
@@ -186,13 +189,13 @@ public class RemindersActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             };
-            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+            mEventsDatabaseReference.addChildEventListener(mChildEventListener);
         }
     }
 
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
-            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
+            mEventsDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
     }
