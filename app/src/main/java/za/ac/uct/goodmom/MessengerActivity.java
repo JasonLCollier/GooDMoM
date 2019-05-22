@@ -1,9 +1,15 @@
 package za.ac.uct.goodmom;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -34,6 +41,8 @@ public class MessengerActivity extends AppCompatActivity {
 
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
+    public static final String CHANNEL_ID = "channel_01";
+
 
     private ArrayList<Message> mMessagetList;
     private RecyclerView mMessageRecyclerView;
@@ -43,11 +52,13 @@ public class MessengerActivity extends AppCompatActivity {
     private Button mSendButton;
 
     private String mUsername, mUserId;
+    private boolean mNewMessageNotifications;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mMessagesDatabaseReference;
     private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
     private FirebaseAuth mFirebaseAuth;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -82,7 +93,6 @@ public class MessengerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messenger);
 
         // Initialise Firebase components
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebasedatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
@@ -96,6 +106,8 @@ public class MessengerActivity extends AppCompatActivity {
         mMessageEditText = findViewById(R.id.message_edit_text);
         mSendButton = findViewById(R.id.send_button);
 
+        // Initialise variables
+        mNewMessageNotifications = false;
         mMessagetList = new ArrayList<>();
         mMessageAdapter = new MessageAdapter(mMessagetList);
 
@@ -208,6 +220,9 @@ public class MessengerActivity extends AppCompatActivity {
                     mMessageRecyclerView.smoothScrollToPosition(mMessagetList.size() - 1);
 
                     mMessageAdapter.notifyDataSetChanged();
+
+                    //if (mNewMessageNotifications)
+                    //addNotification();
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -224,6 +239,26 @@ public class MessengerActivity extends AppCompatActivity {
             };
             mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
         }
+
+        if (mValueEventListener == null) {
+            mValueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    // Value events are always triggered last
+                    // and are guaranteed to contain updates from any other events
+                    // which occurred before that snapshot was taken
+
+                    // Enable new message notifications
+                    mNewMessageNotifications = true;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+        }
+        mMessagesDatabaseReference.addValueEventListener(mValueEventListener);
     }
 
     private void detachDatabaseReadListener() {
@@ -232,4 +267,37 @@ public class MessengerActivity extends AppCompatActivity {
             mChildEventListener = null;
         }
     }
+
+    private void addNotification() {
+        Intent notificationIntent = new Intent(this, MessengerActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle("GooDMoM")
+                        .setContentText("New Message")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(contentIntent)
+                        .setAutoCancel(true);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Messenger", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("New Message Notification");
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
