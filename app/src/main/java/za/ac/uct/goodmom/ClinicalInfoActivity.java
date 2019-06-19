@@ -33,17 +33,18 @@ public class ClinicalInfoActivity extends AppCompatActivity {
     public static final String LOG_TAG = ClinicalInfoActivity.class.getSimpleName();
 
     private Button mSaveButton;
-    private EditText mHpSurnameText, mHpNumberText;
-    private TextView mDueDateText, mHeightText, mCancelButton, mOkButton;
+    private EditText mHpSurnameText, mHpNumberText, mDoubleNumberText;
+    private TextView mDueDateText, mHeightText, mPrepregWeightText, mCancelButton, mOkButton;
     private DatePickerDialog mDatePickerDialog;
     private Spinner mHpSpinner, mDiabetesSpinner;
-    private LinearLayout mHeightContainer;
+    private LinearLayout mHeightContainer, mWeightContainer;
 
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
 
     private int mYear, mMonth, mDay, mHeight;
-    private String mDueDateString, mHpTypeString, mDiabetesTypeString, mHeightString;
+    private double mPrepregWeight;
+    private String mDueDateString, mHpTypeString, mDiabetesTypeString, mHeightString, mPrepregWeightString;
 
     private String mUsername, mUserId, mEmail;
 
@@ -66,9 +67,12 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         mDiabetesSpinner = findViewById(R.id.diabetes_type_spinner);
         mHeightContainer = findViewById(R.id.height_container);
         mHeightText = findViewById(R.id.height_value);
+        mWeightContainer = findViewById(R.id.weight_container);
+        mPrepregWeightText = findViewById(R.id.prepreg_weight_value);
 
-        // Initialise Height
+        // Initialise Height and weight
         mHeightText.setText("0");
+        mPrepregWeightText.setText("00.0");
 
         // Initialise Firebase components
         mFirebasedatabase = FirebaseDatabase.getInstance();
@@ -187,13 +191,55 @@ public class ClinicalInfoActivity extends AppCompatActivity {
             }
         });
 
+        // On click listener for weight value
+        mWeightContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(ClinicalInfoActivity.this);
+                mDialog.setContentView(R.layout.dialog_edit_text);
+
+                mDoubleNumberText = mDialog.findViewById(R.id.number_val);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the glucose value
+
+                        mPrepregWeightString = mDoubleNumberText.getText().toString();
+                        mPrepregWeight = Double.valueOf(mPrepregWeightString);
+                        mPrepregWeightText.setText(mPrepregWeightString);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
         // Set a click listener on that button
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             // The code in this method will be executed when the Log In button is clicked on.
             @Override
             public void onClick(View view) {
 
+                // Assign all user to given HP ID, except if HP ID is one
                 String hpNumber = mHpNumberText.getText().toString();
+                if (mHpNumberText.getText().toString() == "1")
+                    hpNumber = "nvYiR62maGNho4avqSAQAvoE8wI2"; // Barnard's number
+
 
                 // Update user object
                 Intent userInfo = getIntent();
@@ -205,6 +251,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
                 newUser.setHpType(mHpTypeString);
                 newUser.setDiabetesType(mDiabetesTypeString);
                 newUser.setHeight(mHeight);
+                newUser.setPrepregWeight(mPrepregWeight);
                 newUser.setDueDate(convertDateToMillis(mDueDateString));
 
                 // Write the user data to Firebase
@@ -214,7 +261,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
                 LinkedPatient newLinkedPatient = new LinkedPatient();
                 newLinkedPatient.setPatientId(mUserId);
 
-                // Write current users's ID to LinkedPatient's linked patients list
+                // Write current users's ID to Linked HP's linked patients list
                 mLinkedPatientsDatabaseReference = mFirebasedatabase.getReference().child("doctors").child(hpNumber).child("linkedPatients");
                 mLinkedPatientsDatabaseReference.push().setValue(newLinkedPatient);
 

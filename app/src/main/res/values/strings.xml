@@ -27,6 +27,7 @@
     <string name="add_data">Add Data</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="my_profile">My Profile</string>
 
     <!-- Strings related to the messenger -->
     <string name="send_button_label">Send</string>
@@ -73,10 +74,12 @@
     <string name="hp_surname">Healthcare Professional Surname</string>
     <string name="hp_surname_hint">e.g. Barnard</string>
     <string name="hp_uid">Healthcare Professional User ID</string>
-    <string name="hp_uid_hint">Enter the code given to you by your HP here</string>
+    <string name="hp_uid_hint">Enter the code given to you</string>
     <string name="hp_type">Healthcare Professional Type</string>
     <string name="height">Height</string>
     <string name="height_unit">cm</string>
+    <string name="prepregnancy_weight">Pre-pregnancy Weight</string>
+    <string name="body_weight_unit_short">Kg</string>
     <string name="diabetes_type">Diabetes Type</string>
     <string name="due_date">Due Date</string>
 
@@ -172,5 +175,12 @@
         <item>Shopping Mall</item>
         <item>Outdoor</item>
     </string-array>
+    <string name="title_activity_profile">ProfileActivity</string>
+
+    <!-- Strings related to profile -->
+    <string name="full_name">Full Name</string>
+    <string name="address">Address</string>
+    <string name="email">Email Address</string>
+    <string name="dob">Date of Birth</string>
 
 </resources>

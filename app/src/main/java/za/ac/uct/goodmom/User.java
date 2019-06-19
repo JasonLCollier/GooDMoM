@@ -13,6 +13,7 @@ public class User implements Serializable {
     private long mDueDate;
     private String mHpType;
     private int mHeight;
+    private double mPrepregWeight;
     private String mDiabetesType;
 
     public User() {
@@ -96,6 +97,14 @@ public class User implements Serializable {
 
     public void setHeight(int height) {
         mHeight = height;
+    }
+
+    public double getPrepregWeight() {
+        return mPrepregWeight;
+    }
+
+    public void setPrepregWeight(double prepregWeight) {
+        mPrepregWeight = prepregWeight;
     }
 
     public String getDiabetesType() {

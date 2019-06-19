@@ -144,6 +144,10 @@ public class RemindersActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent profileIntent = new Intent(RemindersActivity.this, ProfileActivity.class);
+                startActivity(profileIntent);
+                return true;
             case R.id.signout_menu:
                 AuthUI.getInstance().signOut(this);
                 Intent logoutIntent = new Intent(RemindersActivity.this, LandingActivity.class);

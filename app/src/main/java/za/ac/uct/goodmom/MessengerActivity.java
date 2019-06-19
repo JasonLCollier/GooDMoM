@@ -181,6 +181,10 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent profileIntent = new Intent(MessengerActivity.this, ProfileActivity.class);
+                startActivity(profileIntent);
+                return true;
             case R.id.signout_menu:
                 onSignedOutCleanup();
                 AuthUI.getInstance().signOut(this);

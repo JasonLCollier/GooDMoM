@@ -80,10 +80,10 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:text="@string/hp_type"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="@string/hp_type"
             app:layout_constraintTop_toBottomOf="@+id/hp_number" />
 
         <Spinner
@@ -107,10 +107,10 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:text="@string/height"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="@string/height"
             app:layout_constraintTop_toBottomOf="@+id/hp_type_spinner" />
 
         <LinearLayout
@@ -134,7 +134,7 @@
                 android:textAppearance="@android:style/TextAppearance.Medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/height_text_view"
-                tools:text="155" />
+                tools:text="000" />
 
             <TextView
                 android:id="@+id/height_unit_text_view"
@@ -148,6 +148,54 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/prepregnancy_weight_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@string/prepregnancy_weight"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/height_container" />
+
+        <LinearLayout
+            android:id="@+id/weight_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/prepregnancy_weight_text_view">
+
+            <TextView
+                android:id="@+id/prepreg_weight_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="00.0" />
+
+            <TextView
+                android:id="@+id/weight_unit_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="@string/body_weight_unit_short"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+        </LinearLayout>
+
+        <TextView
             android:id="@+id/diabetes_type_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -156,11 +204,11 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:text="@string/diabetes_type"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="@string/diabetes_type"
-            app:layout_constraintTop_toBottomOf="@+id/height_container" />
+            app:layout_constraintTop_toBottomOf="@+id/weight_container" />
 
         <Spinner
             android:id="@+id/diabetes_type_spinner"
@@ -184,9 +232,9 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:text="@string/due_date"
+            android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintTop_toBottomOf="@+id/diabetes_type_spinner" />
 
         <TextView
