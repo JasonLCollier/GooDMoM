@@ -52,9 +52,9 @@
     </string-array>
 
     <string-array name="diabetes_array">
+        <item>Gestational Diabetes</item>
         <item>Type 1 Diabetes</item>
         <item>Type 2 Diabetes</item>
-        <item>Gestational Diabetes</item>
     </string-array>
 
     <string name="id">Identity Number</string>
@@ -182,5 +182,10 @@
     <string name="address">Address</string>
     <string name="email">Email Address</string>
     <string name="dob">Date of Birth</string>
+    <string name="bmi">Body Mass Index</string>
+    <string name="hp">Linked Healthcare Professional</string>
+    <string name="glucose_range">Glucose Range</string>
+    <string name="weight_range">Weight Range</string>
+    <string name="activity_goal">Activity Goal</string>
 
 </resources>
