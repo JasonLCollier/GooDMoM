@@ -19,6 +19,22 @@ public class User implements Serializable {
     public User() {
     }
 
+    public User(String name, String phone, String id, String email, String address, String hpSurname, String hpNumber, long dueDate, String hpType, int height, double weight, String diabetesType) {
+        mName = name;
+        mPhone = phone;
+        mId = id;
+        mEmail = email;
+        mAddress = address;
+        mHpSurname = hpSurname;
+        mHpNumber = hpNumber;
+        mDueDate = dueDate;
+        mHpNumber = hpNumber;
+        mHpType = hpType;
+        mHeight = height;
+        mPrepregWeight = weight;
+        mDiabetesType = diabetesType;
+    }
+
     public void setAddress(int no, String street, String city, String province, int postCode) {
         mAddress = no + ", " + street + ", " + city + ", " + province + ", " + postCode;
     }

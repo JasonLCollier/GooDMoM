@@ -324,7 +324,9 @@ public class DashboardActivity extends AppCompatActivity {
 
         try {
             // get due date in millis
-            long dueDate = mUser.getDueDate();
+            long dueDate = 0;
+            if (mUser != null)
+                dueDate = mUser.getDueDate();
 
             // set due date text
             Date dueDateObj = new Date(dueDate);
@@ -358,7 +360,7 @@ public class DashboardActivity extends AppCompatActivity {
         double activityTime = 0;
         double weight = 0;
         int count = 0;
-        int zeroWeightCount = 0; //checks if weight is not entered and does not inlude it in avg calc
+        int zeroWeightCount = 0; //checks if weight is not entered and does not include it in avg calc
 
         for (int i = 0; i < mGdDataList.size(); i++) {
             if (mGdDataList.get(i).getMonth() - 1 == mMonthOfYear) {
