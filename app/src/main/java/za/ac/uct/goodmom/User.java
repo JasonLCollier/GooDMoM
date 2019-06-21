@@ -13,13 +13,13 @@ public class User implements Serializable {
     private long mDueDate;
     private String mHpType;
     private int mHeight;
-    private double mPrepregWeight;
+    private double mPrePregWeight;
     private String mDiabetesType;
 
     public User() {
     }
 
-    public User(String name, String phone, String id, String email, String address, String hpSurname, String hpNumber, long dueDate, String hpType, int height, double weight, String diabetesType) {
+    public User(String name, String phone, String id, String email, String address, String hpSurname, String hpNumber, long dueDate, String hpType, int height, double prePregWeight, String diabetesType) {
         mName = name;
         mPhone = phone;
         mId = id;
@@ -31,7 +31,7 @@ public class User implements Serializable {
         mHpNumber = hpNumber;
         mHpType = hpType;
         mHeight = height;
-        mPrepregWeight = weight;
+        mPrePregWeight = prePregWeight;
         mDiabetesType = diabetesType;
     }
 
@@ -75,6 +75,10 @@ public class User implements Serializable {
         return mAddress;
     }
 
+    public void setAddress(String address) {
+        mAddress = address;
+    }
+
     public String getHpSurname() {
         return mHpSurname;
     }
@@ -115,12 +119,12 @@ public class User implements Serializable {
         mHeight = height;
     }
 
-    public double getPrepregWeight() {
-        return mPrepregWeight;
+    public double getPrePregWeight() {
+        return mPrePregWeight;
     }
 
-    public void setPrepregWeight(double prepregWeight) {
-        mPrepregWeight = prepregWeight;
+    public void setPrePregWeight(double prepregWeight) {
+        mPrePregWeight = prepregWeight;
     }
 
     public String getDiabetesType() {

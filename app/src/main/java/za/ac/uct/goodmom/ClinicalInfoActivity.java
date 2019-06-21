@@ -43,7 +43,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
     private NumberPicker mNumberPicker;
 
     private int mYear, mMonth, mDay, mHeight;
-    private double mPrepregWeight;
+    private double mPrePregWeight;
     private String mDueDateString, mHpTypeString, mDiabetesTypeString, mHeightString, mPrepregWeightString;
 
     private String mUsername, mUserId, mEmail;
@@ -217,7 +217,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
                         // Get the glucose value
 
                         mPrepregWeightString = mDoubleNumberText.getText().toString();
-                        mPrepregWeight = Double.valueOf(mPrepregWeightString);
+                        mPrePregWeight = Double.valueOf(mPrepregWeightString);
                         mPrepregWeightText.setText(mPrepregWeightString);
 
                         // Exit dialog
@@ -251,7 +251,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
                 newUser.setHpType(mHpTypeString);
                 newUser.setDiabetesType(mDiabetesTypeString);
                 newUser.setHeight(mHeight);
-                newUser.setPrepregWeight(mPrepregWeight);
+                newUser.setPrePregWeight(mPrePregWeight);
                 newUser.setDueDate(convertDateToMillis(mDueDateString));
 
                 // Write the user data to Firebase

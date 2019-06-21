@@ -1,18 +1,26 @@
 package za.ac.uct.goodmom;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ProfileActivity extends AppCompatActivity {
+
+    public static final String LOG_TAG = ProfileActivity.class.getSimpleName();
 
     private TextView mNameText, mIDText, mEmailText, mPhoneText, mAddressText, mDOBText,
             mHeightText, mWeightText, mBMIText, mDiabetesTypeText, mDueDateText, mHPText,
@@ -23,7 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mUsersDatabaseReference;
-    private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
     private FirebaseAuth mFirebaseAuth;
 
     @Override
@@ -59,21 +67,21 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Initialise variables
         mNameText.setText(mUsername);
-        mIDText.setText("No data");
-        mEmailText.setText("No data");
-        mPhoneText.setText("No data");
-        mAddressText.setText("No data");
-        mDOBText.setText("No data");
-        mHeightText.setText("No data");
-        mWeightText.setText("No data");
-        mBMIText.setText("No data");
-        mDiabetesTypeText.setText("No data");
-        mDueDateText.setText("No data");
-        mHPText.setText("No data");
-        mGlucoseRangeText.setText("No data");
-        mWeightRangeText.setText("No data");
-        mActivityGoalText.setText("No data");
-        mMedicationText.setText("No data");
+        mIDText.setText(R.string.no_data);
+        mEmailText.setText(R.string.no_data);
+        mPhoneText.setText(R.string.no_data);
+        mAddressText.setText(R.string.no_data);
+        mDOBText.setText(R.string.no_data);
+        mHeightText.setText(R.string.no_data);
+        mWeightText.setText(R.string.no_data);
+        mBMIText.setText(R.string.no_data);
+        mDiabetesTypeText.setText(R.string.no_data);
+        mDueDateText.setText(R.string.no_data);
+        mHPText.setText(R.string.no_data);
+        mGlucoseRangeText.setText(R.string.no_data);
+        mWeightRangeText.setText(R.string.no_data);
+        mActivityGoalText.setText(R.string.no_data);
+        mMedicationText.setText(R.string.no_data);
     }
 
     @Override
@@ -90,39 +98,73 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void updateData(User user) {
-        mIDText.setText(user.getId());
+        // Calculate BMI
+        int height = user.getHeight();
+        double weight = user.getPrePregWeight();
+        float heightInMeters = (float) height / 100;
+        float bmi = ((float) weight) / ((heightInMeters) * (heightInMeters));
+
+        // Set DOB and Due Date text
+        String id = user.getId();
+        String DOB = id.substring(0, 6);
+
+        long dueDate = user.getDueDate();
+        Date dueDateObj = new Date(dueDate);
+        String dueDateText = String.valueOf(dueDateObj);
+
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMdd");
+            Date date = inputFormat.parse(DOB);
+
+            SimpleDateFormat outputFormat = new SimpleDateFormat("EEE, d MMM yyyy");
+            DOB = outputFormat.format(date);
+
+            dueDateText = outputFormat.format(dueDateObj);
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+
+        // Assign values to views
+        mIDText.setText(id);
+        mEmailText.setText(user.getEmail());
+        mPhoneText.setText(user.getPhone());
+        mAddressText.setText(user.getAddress());
+        mDOBText.setText(DOB);
+        mHeightText.setText(String.valueOf(height) + " cm");
+        mWeightText.setText(String.valueOf(weight) + " Kg");
+        mBMIText.setText(String.valueOf(bmi) + " Kg/m2");
+        mDiabetesTypeText.setText(user.getDiabetesType());
+        mDueDateText.setText(dueDateText);
+        mHPText.setText(user.getHpSurname());
+        //mGlucoseRangeText.setText("");
+        //mWeightRangeText.setText("");
+        //mActivityGoalText.setText("");
+        //mMedicationText.setText("");
+
     }
 
     private void attachDatabaseReadListener() {
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
+        if (mValueEventListener == null) {
+            mValueEventListener = new ValueEventListener() {
                 @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    String key = dataSnapshot.getKey();
-                    if (key == "id")
-                        mIDText.setText(dataSnapshot.getValue(String.class));
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+                    updateData(user);
                 }
 
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                }
-
-                public void onCancelled(DatabaseError databaseError) {
                 }
             };
-            mUsersDatabaseReference.addChildEventListener(mChildEventListener);
         }
+        mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListener);
     }
 
     private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mUsersDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
+        if (mValueEventListener != null) {
+            mUsersDatabaseReference.removeEventListener(mValueEventListener);
+            mValueEventListener = null;
         }
     }
 
