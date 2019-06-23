@@ -30,8 +30,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mUsersDatabaseReference;
-    private ValueEventListener mValueEventListener;
+    private DatabaseReference mUsersDatabaseReference, mRangesDatabaseReference;
+    private ValueEventListener mValueEventListener, mValueEventListenerForRanges;
     private FirebaseAuth mFirebaseAuth;
 
     @Override
@@ -46,6 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
         mUsername = user.getDisplayName();
         mUserId = user.getUid();
         mUsersDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("userData");
+        mRangesDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("userData").child("ranges");
 
         // Assign variables to views
         mNameText = findViewById(R.id.name_val);
@@ -65,23 +66,6 @@ public class ProfileActivity extends AppCompatActivity {
         mActivityGoalText = findViewById(R.id.activity_goal_val);
         mMedicationText = findViewById(R.id.medication_val);
 
-        // Initialise variables
-        mNameText.setText(mUsername);
-        mIDText.setText(R.string.no_data);
-        mEmailText.setText(R.string.no_data);
-        mPhoneText.setText(R.string.no_data);
-        mAddressText.setText(R.string.no_data);
-        mDOBText.setText(R.string.no_data);
-        mHeightText.setText(R.string.no_data);
-        mWeightText.setText(R.string.no_data);
-        mBMIText.setText(R.string.no_data);
-        mDiabetesTypeText.setText(R.string.no_data);
-        mDueDateText.setText(R.string.no_data);
-        mHPText.setText(R.string.no_data);
-        mGlucoseRangeText.setText(R.string.no_data);
-        mWeightRangeText.setText(R.string.no_data);
-        mActivityGoalText.setText(R.string.no_data);
-        mMedicationText.setText(R.string.no_data);
     }
 
     @Override
@@ -97,7 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    private void updateData(User user) {
+    private void updateDataDisplay(User user) {
         // Calculate BMI
         int height = user.getHeight();
         double weight = user.getPrePregWeight();
@@ -125,6 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Assign values to views
+        mNameText.setText(mUsername);
         mIDText.setText(id);
         mEmailText.setText(user.getEmail());
         mPhoneText.setText(user.getPhone());
@@ -136,11 +121,30 @@ public class ProfileActivity extends AppCompatActivity {
         mDiabetesTypeText.setText(user.getDiabetesType());
         mDueDateText.setText(dueDateText);
         mHPText.setText(user.getHpSurname());
-        //mGlucoseRangeText.setText("");
-        //mWeightRangeText.setText("");
-        //mActivityGoalText.setText("");
-        //mMedicationText.setText("");
 
+        if (user.getMedication() == null)
+            mMedicationText.setText("Your HP has not set medication");
+        else
+            mMedicationText.setText(user.getMedication());
+    }
+
+    private void updateRangesDisplay(HpSpecifiedRanges ranges) {
+        String noDataMessage = "Your HP has not set goals";
+
+        if (ranges.getGlucMin() == null | ranges.getGlucMax() == null)
+            mGlucoseRangeText.setText(noDataMessage);
+        else
+            mGlucoseRangeText.setText(ranges.getGlucMin() + " - " + ranges.getGlucMax() + " mmol/L");
+
+        if (ranges.getWeightMin() == null | ranges.getWeightMax() == null)
+            mWeightRangeText.setText(noDataMessage);
+        else
+            mWeightRangeText.setText(ranges.getWeightMin() + " - " + ranges.getWeightMax() + " Kg");
+
+        if (ranges.getActMin() == null | ranges.getActMax() == null)
+            mActivityGoalText.setText(noDataMessage);
+        else
+            mActivityGoalText.setText(ranges.getActMin() + " - " + ranges.getActMax() + " min / week");
     }
 
     private void attachDatabaseReadListener() {
@@ -149,7 +153,7 @@ public class ProfileActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
-                    updateData(user);
+                    updateDataDisplay(user);
                 }
 
                 @Override
@@ -159,12 +163,33 @@ public class ProfileActivity extends AppCompatActivity {
             };
         }
         mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListener);
+
+        if (mValueEventListenerForRanges == null) {
+            mValueEventListenerForRanges = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    HpSpecifiedRanges ranges = dataSnapshot.getValue(HpSpecifiedRanges.class);
+                    updateRangesDisplay(ranges);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+        }
+        mRangesDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForRanges);
     }
 
     private void detachDatabaseReadListener() {
         if (mValueEventListener != null) {
             mUsersDatabaseReference.removeEventListener(mValueEventListener);
             mValueEventListener = null;
+        }
+
+        if (mValueEventListenerForRanges != null) {
+            mRangesDatabaseReference.removeEventListener(mValueEventListenerForRanges);
+            mValueEventListenerForRanges = null;
         }
     }
 

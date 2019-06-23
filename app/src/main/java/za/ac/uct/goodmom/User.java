@@ -15,11 +15,12 @@ public class User implements Serializable {
     private int mHeight;
     private double mPrePregWeight;
     private String mDiabetesType;
+    private String mMedication;
 
     public User() {
     }
 
-    public User(String name, String phone, String id, String email, String address, String hpSurname, String hpNumber, long dueDate, String hpType, int height, double prePregWeight, String diabetesType) {
+    /*public User(String name, String phone, String id, String email, String address, String hpSurname, String hpNumber, long dueDate, String hpType, int height, double prePregWeight, String diabetesType, String medication) {
         mName = name;
         mPhone = phone;
         mId = id;
@@ -33,7 +34,8 @@ public class User implements Serializable {
         mHeight = height;
         mPrePregWeight = prePregWeight;
         mDiabetesType = diabetesType;
-    }
+        mMedication = medication;
+    }*/
 
     public void setAddress(int no, String street, String city, String province, int postCode) {
         mAddress = no + ", " + street + ", " + city + ", " + province + ", " + postCode;
@@ -133,5 +135,13 @@ public class User implements Serializable {
 
     public void setDiabetesType(String diabetesType) {
         mDiabetesType = diabetesType;
+    }
+
+    public String getMedication() {
+        return mMedication;
+    }
+
+    public void setMedication(String medication) {
+        mMedication = medication;
     }
 }
