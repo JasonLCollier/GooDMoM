@@ -106,6 +106,7 @@ public class ProfileActivity extends AppCompatActivity {
                 mLastPeriodText.setVisibility(View.INVISIBLE);
                 mCycleLengthText.setVisibility(View.INVISIBLE);
                 mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+                // set date to today, incl mYear, mMonth, mDay
 
                 // Initialise calculation method spinner
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ProfileActivity.this,
@@ -157,6 +158,12 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
 
+                if (mCalculationMethod == 0) {
+                    //date + 280
+                } else if (mCalculationMethod == 1) {
+                    // get cycle period
+                    // date + 10 * cycle period
+                }
 
                 mDialog.show();
             }
