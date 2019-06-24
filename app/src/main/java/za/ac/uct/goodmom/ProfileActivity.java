@@ -1,9 +1,16 @@
 package za.ac.uct.goodmom;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +34,14 @@ public class ProfileActivity extends AppCompatActivity {
             mGlucoseRangeText, mWeightRangeText, mActivityGoalText, mMedicationText;
 
     private String mUsername, mUserId;
+
+    // Due date calculator
+    private Dialog mDialog;
+    private DatePickerDialog mDatePickerDialog;
+    private TextView mOkButton, mCancelButton, mConceptionDateText, mLastPeriodText, mCycleLengthText, mCalculatedDueDateText;
+    private Spinner mCalculationMethodSpinner, mCycleLengthSpinner;
+    private int mCalculationMethod, mYear, mMonth, mDay;
+    private String mChosenDateStr;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -65,6 +80,87 @@ public class ProfileActivity extends AppCompatActivity {
         mWeightRangeText = findViewById(R.id.weight_range_val);
         mActivityGoalText = findViewById(R.id.activity_goal_val);
         mMedicationText = findViewById(R.id.medication_val);
+
+        mDueDateText.setOnClickListener(new View.OnClickListener() {
+
+            // Tme picker dialog
+            @Override
+            public void onClick(View v) {
+                // Initialise dialog
+                mDialog = new Dialog(ProfileActivity.this);
+                mDialog.setContentView(R.layout.dialog_calculate_due_date);
+
+                // Assign variables to views
+                mCalculationMethodSpinner = mDialog.findViewById(R.id.method_spinner);
+                mConceptionDateText = mDialog.findViewById(R.id.conception_date_text_view);
+                mLastPeriodText = mDialog.findViewById(R.id.last_period_date_text_view);
+                mCalculatedDueDateText = mDialog.findViewById(R.id.date_value);
+                mCycleLengthText = mDialog.findViewById(R.id.cycle_length_text_view);
+                mCycleLengthSpinner = mDialog.findViewById(R.id.cycle_length_spinner);
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+
+                // Default layout uses conception date
+                mCalculationMethod = 0;
+                mConceptionDateText.setVisibility(View.VISIBLE);
+                mLastPeriodText.setVisibility(View.INVISIBLE);
+                mCycleLengthText.setVisibility(View.INVISIBLE);
+                mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+
+                // Initialise calculation method spinner
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ProfileActivity.this,
+                        R.array.calculation_method_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mCalculationMethodSpinner.setAdapter(adapter);
+
+                // On click listener for calculation method value
+                mCalculationMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            mCalculationMethod = 0;
+                            mConceptionDateText.setVisibility(View.VISIBLE);
+                            mLastPeriodText.setVisibility(View.INVISIBLE);
+                            mCycleLengthText.setVisibility(View.INVISIBLE);
+                            mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+                        } else if (position == 1) {
+                            mCalculationMethod = 1;
+                            mConceptionDateText.setVisibility(View.INVISIBLE);
+                            mLastPeriodText.setVisibility(View.VISIBLE);
+                            mCycleLengthText.setVisibility(View.VISIBLE);
+                            mCycleLengthSpinner.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        mCalculationMethod = 0;
+                    }
+                });
+
+                // Get date value
+                mCalculatedDueDateText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDatePickerDialog = new DatePickerDialog(ProfileActivity.this, R.style.DialogTheme,
+                                new DatePickerDialog.OnDateSetListener() {
+
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year,
+                                                          int monthOfYear, int dayOfMonth) {
+                                        // set day of month , month and year value in the edit text
+                                        mChosenDateStr = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+                                        mCalculatedDueDateText.setText(formatDisplayDate(mChosenDateStr));
+                                    }
+                                }, mYear, mMonth, mDay);
+                        mDatePickerDialog.show();
+                    }
+                });
+
+
+                mDialog.show();
+            }
+        });
 
     }
 
@@ -192,5 +288,23 @@ public class ProfileActivity extends AppCompatActivity {
             mValueEventListenerForRanges = null;
         }
     }
+
+    public String formatDisplayDate(String srcDate) {
+        String destString = null;
+
+        SimpleDateFormat srcFormat = new SimpleDateFormat("d/M/yyyy");
+        SimpleDateFormat destFormat = new SimpleDateFormat("EEE, d MMM yyyy");
+
+        try {
+            Date dateObj = srcFormat.parse(srcDate);
+            destString = destFormat.format(dateObj);
+        } catch (ParseException e) {
+
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+        return destString;
+
+    }
+
 
 }

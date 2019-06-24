@@ -189,4 +189,31 @@
     <string name="activity_goal">Activity Goal</string>
     <string name="no_data">No Data</string>
 
+    <!-- Strings related to due date calculator -->
+    <string name="calculation_method">Calculation Method</string>
+    <string name="conception_date">Date of Conception</string>
+    <string name="last_period_date">First Day of Last Period</string>
+    <string name="cycle_length">Cycle Length</string>
+    <string-array name="calculation_method_array">
+        <item>Conception Date</item>
+        <item>Last Period</item>
+    </string-array>
+    <string-array name="cycle_length_array">
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+    </string-array>
+
 </resources>
