@@ -190,6 +190,7 @@
     <string name="no_data">No Data</string>
 
     <!-- Strings related to due date calculator -->
+    <string name="calculate_due_date">Calculate Due Date</string>
     <string name="calculation_method">Calculation Method</string>
     <string name="conception_date">Date of Conception</string>
     <string name="last_period_date">First Day of Last Period</string>

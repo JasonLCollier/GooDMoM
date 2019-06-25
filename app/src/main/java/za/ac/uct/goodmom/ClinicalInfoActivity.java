@@ -37,7 +37,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
     private TextView mDueDateText, mHeightText, mPrepregWeightText, mCancelButton, mOkButton;
     private DatePickerDialog mDatePickerDialog;
     private Spinner mHpSpinner, mDiabetesSpinner;
-    private LinearLayout mHeightContainer, mWeightContainer;
+    private LinearLayout mHeightContainer, mWeightContainer, mDueDateContainer;
 
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
@@ -52,6 +52,12 @@ public class ClinicalInfoActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mUsersDatabaseReference, mLinkedPatientsDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
+
+    // Due date calculator
+    private TextView mConceptionDateText, mLastPeriodText, mCycleLengthText, mCalculatedDueDateText;
+    private Spinner mCalculationMethodSpinner, mCycleLengthSpinner;
+    private int mCalculationMethod, mCycleLengthVal;
+    private String mChosenDateStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,7 @@ public class ClinicalInfoActivity extends AppCompatActivity {
         mHeightText = findViewById(R.id.height_value);
         mWeightContainer = findViewById(R.id.weight_container);
         mPrepregWeightText = findViewById(R.id.prepreg_weight_value);
+        mDueDateContainer = findViewById(R.id.calculate_due_date_container);
 
         // Initialise Height and weight
         mHeightText.setText("0");
@@ -161,8 +168,8 @@ public class ClinicalInfoActivity extends AppCompatActivity {
 
                 // Set up number picker
                 mNumberPicker = mDialog.findViewById(R.id.number_picker);
-                mNumberPicker.setMinValue(70);
-                mNumberPicker.setMaxValue(250);
+                mNumberPicker.setMinValue(120);
+                mNumberPicker.setMaxValue(210);
 
                 mCancelButton = mDialog.findViewById(R.id.cancel_button);
                 mCancelButton.setOnClickListener(new View.OnClickListener() {
@@ -229,17 +236,150 @@ public class ClinicalInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Set a click listener on that button
+        // Set a click listener on due date calculator
+        mDueDateContainer.setOnClickListener(new View.OnClickListener() {
+            // The code in this method will be executed when the Log In button is clicked on.
+            @Override
+            public void onClick(View view) {
+                // Initialise dialog
+                mDialog = new Dialog(ClinicalInfoActivity.this);
+                mDialog.setContentView(R.layout.dialog_calculate_due_date);
+
+                // Assign variables to views
+                mCalculationMethodSpinner = mDialog.findViewById(R.id.method_spinner);
+                mConceptionDateText = mDialog.findViewById(R.id.conception_date_text_view);
+                mLastPeriodText = mDialog.findViewById(R.id.last_period_date_text_view);
+                mCalculatedDueDateText = mDialog.findViewById(R.id.date_value);
+                mCycleLengthText = mDialog.findViewById(R.id.cycle_length_text_view);
+                mCycleLengthSpinner = mDialog.findViewById(R.id.cycle_length_spinner);
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+
+                // Default layout uses conception date
+                mCalculationMethod = 0;
+                mConceptionDateText.setVisibility(View.VISIBLE);
+                mLastPeriodText.setVisibility(View.INVISIBLE);
+                mCycleLengthText.setVisibility(View.INVISIBLE);
+                mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+
+                // Get today's date
+                mChosenDateStr = mDay + "/" + (mMonth + 1) + "/" + mYear;
+                mCalculatedDueDateText.setText(formatDisplayDate(mChosenDateStr));
+
+                // Initialise calculation method spinner
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ClinicalInfoActivity.this,
+                        R.array.calculation_method_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mCalculationMethodSpinner.setAdapter(adapter);
+
+                // Initialise cycle length spinner
+                adapter = ArrayAdapter.createFromResource(ClinicalInfoActivity.this,
+                        R.array.cycle_length_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mCycleLengthSpinner.setAdapter(adapter);
+                mCycleLengthSpinner.setSelection(7); // set default value to position 7 (28 day cycle)
+
+                // On click listener for calculation method value
+                mCalculationMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            mCalculationMethod = 0;
+                            mConceptionDateText.setVisibility(View.VISIBLE);
+                            mLastPeriodText.setVisibility(View.INVISIBLE);
+                            mCycleLengthText.setVisibility(View.INVISIBLE);
+                            mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+                        } else if (position == 1) {
+                            mCalculationMethod = 1;
+                            mConceptionDateText.setVisibility(View.INVISIBLE);
+                            mLastPeriodText.setVisibility(View.VISIBLE);
+                            mCycleLengthText.setVisibility(View.VISIBLE);
+                            mCycleLengthSpinner.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        mCalculationMethod = 0;
+                    }
+                });
+
+                // Get date value
+                mCalculatedDueDateText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDatePickerDialog = new DatePickerDialog(ClinicalInfoActivity.this, R.style.DialogTheme,
+                                new DatePickerDialog.OnDateSetListener() {
+
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year,
+                                                          int monthOfYear, int dayOfMonth) {
+                                        // set day of month , month and year value in the edit text
+                                        mChosenDateStr = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+                                        mCalculatedDueDateText.setText(formatDisplayDate(mChosenDateStr));
+                                    }
+                                }, mYear, mMonth, mDay);
+                        mDatePickerDialog.show();
+                    }
+                });
+
+                // On click listener for cycle length value
+                mCycleLengthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mCycleLengthVal = Integer.valueOf((String) parent.getItemAtPosition(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        mCycleLengthVal = 28;
+                    }
+                });
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Calculate due date
+                        if (mCalculationMethod == 0) {
+                            Date date = createDateObject(mChosenDateStr);
+                            date = addDays(date, 266); // 28 weeks from conception
+                            mDueDateString = convertDateToString(date);
+
+                        } else if (mCalculationMethod == 1) {
+                            Date date = createDateObject(mChosenDateStr);
+                            date = addDays(date, (280 - (28 - mCycleLengthVal))); // 280 days from first day of last period
+                            mDueDateString = convertDateToString(date);
+                        }
+                        mDueDateText.setText(formatDisplayDate(mDueDateString));
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
+        // Set a click listener on save button
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             // The code in this method will be executed when the Log In button is clicked on.
             @Override
             public void onClick(View view) {
-
-                // Assign all user to given HP ID, except if HP ID is one
+                // Assign all user to given HP ID, except if HP ID is 1
                 String hpNumber = mHpNumberText.getText().toString();
-                if (mHpNumberText.getText().toString() == "1")
+                if (Integer.valueOf(hpNumber) == 1)
                     hpNumber = "nvYiR62maGNho4avqSAQAvoE8wI2"; // Barnard's number
-
 
                 // Update user object
                 Intent userInfo = getIntent();
@@ -300,6 +440,32 @@ public class ClinicalInfoActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "Error with pull parse", e);
         }
         return dateTime.getTime();
+    }
+
+    private Date createDateObject(String dateStr) {
+        Date dateObj = null;
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+
+        try {
+            dateObj = format.parse(dateStr);
+        } catch (ParseException e) {
+
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+        return dateObj;
+    }
+
+    private Date addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+        return cal.getTime();
+    }
+
+    private String convertDateToString(Date date) {
+        SimpleDateFormat destFormat = new SimpleDateFormat("d/M/yyy");
+        String dateStr = destFormat.format(date);
+        return dateStr;
     }
 
 }

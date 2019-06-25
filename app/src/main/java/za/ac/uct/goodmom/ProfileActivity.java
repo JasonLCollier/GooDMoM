@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -40,8 +41,8 @@ public class ProfileActivity extends AppCompatActivity {
     private DatePickerDialog mDatePickerDialog;
     private TextView mOkButton, mCancelButton, mConceptionDateText, mLastPeriodText, mCycleLengthText, mCalculatedDueDateText;
     private Spinner mCalculationMethodSpinner, mCycleLengthSpinner;
-    private int mCalculationMethod, mYear, mMonth, mDay;
-    private String mChosenDateStr;
+    private int mCalculationMethod, mCycleLengthVal, mYear, mMonth, mDay;
+    private String mChosenDateStr, mDueDateStr;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -106,13 +107,27 @@ public class ProfileActivity extends AppCompatActivity {
                 mLastPeriodText.setVisibility(View.INVISIBLE);
                 mCycleLengthText.setVisibility(View.INVISIBLE);
                 mCycleLengthSpinner.setVisibility(View.INVISIBLE);
-                // set date to today, incl mYear, mMonth, mDay
+
+                // Get today's date
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR); // current year
+                mMonth = c.get(Calendar.MONTH); // current month
+                mDay = c.get(Calendar.DAY_OF_MONTH); // current day
+                mChosenDateStr = mDay + "/" + (mMonth + 1) + "/" + mYear;
+                mCalculatedDueDateText.setText(formatDisplayDate(mChosenDateStr));
 
                 // Initialise calculation method spinner
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ProfileActivity.this,
                         R.array.calculation_method_array, android.R.layout.simple_spinner_item);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mCalculationMethodSpinner.setAdapter(adapter);
+
+                // Initialise cycle length spinner
+                adapter = ArrayAdapter.createFromResource(ProfileActivity.this,
+                        R.array.cycle_length_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mCycleLengthSpinner.setAdapter(adapter);
+                mCycleLengthSpinner.setSelection(7); // set default value to position 7 (28 day cycle)
 
                 // On click listener for calculation method value
                 mCalculationMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -158,12 +173,49 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
 
-                if (mCalculationMethod == 0) {
-                    //date + 280
-                } else if (mCalculationMethod == 1) {
-                    // get cycle period
-                    // date + 10 * cycle period
-                }
+                // On click listener for cycle length value
+                mCycleLengthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mCycleLengthVal = Integer.valueOf((String) parent.getItemAtPosition(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        mCycleLengthVal = 28;
+                    }
+                });
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Calculate due date
+                        if (mCalculationMethod == 0) {
+                            Date date = createDateObject(mChosenDateStr);
+                            date = addDays(date, 266); // 28 weeks from conception
+                            mDueDateStr = convertDateToString(date);
+
+                        } else if (mCalculationMethod == 1) {
+                            Date date = createDateObject(mChosenDateStr);
+                            date = addDays(date, (280 - (28 - mCycleLengthVal))); // 280 days from first day of last period
+                            mDueDateStr = convertDateToString(date);
+                        }
+                        mDueDateText.setText(mDueDateStr);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
 
                 mDialog.show();
             }
@@ -296,7 +348,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    public String formatDisplayDate(String srcDate) {
+    private String formatDisplayDate(String srcDate) {
         String destString = null;
 
         SimpleDateFormat srcFormat = new SimpleDateFormat("d/M/yyyy");
@@ -313,5 +365,30 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    private Date createDateObject(String dateStr) {
+        Date dateObj = null;
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+
+        try {
+            dateObj = format.parse(dateStr);
+        } catch (ParseException e) {
+
+            Log.e(LOG_TAG, "Error with pull parse", e);
+        }
+        return dateObj;
+    }
+
+    private Date addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+        return cal.getTime();
+    }
+
+    private String convertDateToString(Date date) {
+        SimpleDateFormat destFormat = new SimpleDateFormat("EEE, d MMM yyyy");
+        String dateStr = destFormat.format(date);
+        return dateStr;
+    }
 
 }
