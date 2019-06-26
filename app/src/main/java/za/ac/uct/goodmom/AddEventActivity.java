@@ -35,16 +35,16 @@ public class AddEventActivity extends AppCompatActivity {
 
     private EditText mTitleText, mRepeatPeriodText, mRepeatCountText, mLocationText, mDescriptionText;
     private TextView mStartDateText, mEndDateText, mStartTimeText, mEndTimeText;
-    private Spinner mEventTypeSpinner, mDaySpinner;
+    private Spinner mEventTypeSpinner, mPeriodSpinner;
     private Button mCreateEventButton;
 
     private DatePickerDialog mDatePickerDialog;
     private TimePickerDialog mTimePickerDialog;
 
-    private int mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek;
-    private String mTitleStr, mRepeatPeriodStr, mRepeatCountStr, mLocationStr,
-            mDescriptionStr, mStartDateStr, mEndDateStr, mStartTimeStr, mEndTimeStr;
+    private int mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek, mPeriodType, mRepeatPeriodVal, mRepeatCountVal;
+    private String mTitleStr, mLocationStr, mDescriptionStr, mStartDateStr, mEndDateStr, mStartTimeStr, mEndTimeStr;
     private Event mNewEvent;
+    private Date mStartdateObj, mEndDateObj;
 
     private String mUsername, mUserId;
 
@@ -77,7 +77,7 @@ public class AddEventActivity extends AppCompatActivity {
         mStartTimeText = findViewById(R.id.start_time);
         mEndTimeText = findViewById(R.id.end_time);
         mEventTypeSpinner = findViewById(R.id.event_type);
-        mDaySpinner = findViewById(R.id.day);
+        mPeriodSpinner = findViewById(R.id.period_spinner);
         mCreateEventButton = findViewById(R.id.create_event_button);
 
         // Calender class's instance and get current date , month and year from calender
@@ -108,17 +108,16 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         adapter = ArrayAdapter.createFromResource(this,
-                R.array.day_array, android.R.layout.simple_spinner_item);
+                R.array.period_week_day_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        mDaySpinner.setAdapter(adapter);
-
+        mPeriodSpinner.setAdapter(adapter);
 
         mEventTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mEventType = position;
+                mEventType = position; // 0 = appointment; 1 = medication; 2 = glucose reading
             }
 
             @Override
@@ -127,15 +126,15 @@ public class AddEventActivity extends AppCompatActivity {
             }
         });
 
-        mDaySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mPeriodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mDayOfWeek = position;
+                mPeriodType = position; // 0 = day; 1 = week, 2 = month
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mDayOfWeek = 0;
+                mPeriodType = 0;
             }
         });
 
@@ -230,10 +229,17 @@ public class AddEventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Assign EditText values to variables
                 mTitleStr = mTitleText.getText().toString();
-                mRepeatPeriodStr = mRepeatPeriodText.getText().toString();
-                mRepeatCountStr = mRepeatCountText.getText().toString();
                 mLocationStr = mLocationText.getText().toString();
                 mDescriptionStr = mDescriptionText.getText().toString();
+
+                if (mRepeatPeriodText.getText().toString().matches(""))
+                    mRepeatPeriodVal = 0;
+                else
+                    mRepeatPeriodVal = Integer.valueOf(mRepeatPeriodText.getText().toString());
+                if (mRepeatCountText.getText().toString().matches(""))
+                    mRepeatCountVal = 1;
+                else
+                    mRepeatCountVal = Integer.valueOf(mRepeatCountText.getText().toString());
 
                 // Create new event
                 mNewEvent = new Event(mEventType, mTitleStr, mLocationStr, mDescriptionStr,
@@ -241,6 +247,33 @@ public class AddEventActivity extends AppCompatActivity {
 
                 // Push new event to database
                 mEventsDatabaseReference.push().setValue(mNewEvent);
+
+                // Add repeat events
+                if (mPeriodType == 0) {
+                    for (int i = 1; i < mRepeatCountVal; i++) {
+                        mStartDateStr = addDays(mStartDateStr, mRepeatPeriodVal);
+                        mEndDateStr = addDays(mEndDateStr, mRepeatPeriodVal);
+                        mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
+                                convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
+                        mEventsDatabaseReference.push().setValue(mNewEvent);
+                    }
+                } else if (mPeriodType == 1) {
+                    for (int i = 1; i < mRepeatCountVal; i++) {
+                        mStartDateStr = addWeeks(mStartDateStr, mRepeatPeriodVal);
+                        mEndDateStr = addWeeks(mEndDateStr, mRepeatPeriodVal);
+                        mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
+                                convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
+                        mEventsDatabaseReference.push().setValue(mNewEvent);
+                    }
+                } else if (mPeriodType == 2) {
+                    for (int i = 1; i < mRepeatCountVal; i++) {
+                        mStartDateStr = addMonths(mStartDateStr, mRepeatPeriodVal);
+                        mEndDateStr = addMonths(mEndDateStr, mRepeatPeriodVal);
+                        mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
+                                convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
+                        mEventsDatabaseReference.push().setValue(mNewEvent);
+                    }
+                }
 
                 // Return to RemindersActivity with updated event list
                 Intent newEventIntent = new Intent(AddEventActivity.this, RemindersActivity.class);
@@ -270,7 +303,7 @@ public class AddEventActivity extends AppCompatActivity {
 
     public long convertDateTimeToMillis(String dateStr, String timeStr) {
         Date dateTime = null;
-        SimpleDateFormat mSdf = new SimpleDateFormat("dd/MM/yyyy/hh:mm");
+        SimpleDateFormat mSdf = new SimpleDateFormat("d/M/yyyy/HH:mm");
         try {
             dateTime = mSdf.parse(dateStr + "/" + timeStr);
         } catch (ParseException e) {
@@ -326,6 +359,39 @@ public class AddEventActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "Error with pull parse", e);
         }
         return dateObj;
+    }
+
+    private String convertDateToString(Date date) {
+        SimpleDateFormat destFormat = new SimpleDateFormat("d/M/yyyy");
+        String dateStr = destFormat.format(date);
+        return dateStr;
+    }
+
+    private String addDays(String curDateStr, int days) {
+        Date date = createDateObject(curDateStr);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+        date = cal.getTime();
+        return convertDateToString(date);
+    }
+
+    private String addWeeks(String curDateStr, int weeks) {
+        Date date = createDateObject(curDateStr);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.WEEK_OF_YEAR, weeks);
+        date = cal.getTime();
+        return convertDateToString(date);
+    }
+
+    private String addMonths(String curDateStr, int months) {
+        Date date = createDateObject(curDateStr);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MONTH, months);
+        date = cal.getTime();
+        return convertDateToString(date);
     }
 
 }

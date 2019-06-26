@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
             android:parentActivityName=".DashboardActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -20,6 +21,7 @@
         </activity>
         <activity
             android:name=".AddEventActivity"
+            android:label="@string/title_add_reminder"
             android:parentActivityName=".RemindersActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -34,7 +36,12 @@
         </activity>
         <activity
             android:name=".HelpActivity"
-            android:label="@string/title_activity_help" />
+            android:label="@string/help"
+            android:parentActivityName=".DashboardActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="za.ac.uct.goodmom.DashboardActivity" />
+        </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -62,6 +69,7 @@
             android:label="@string/title_activity_messenger" />
         <activity
             android:name=".AddDataActivity"
+            android:label="@string/title_add_data"
             android:parentActivityName=".DashboardActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

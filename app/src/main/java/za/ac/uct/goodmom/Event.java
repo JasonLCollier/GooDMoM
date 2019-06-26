@@ -28,12 +28,9 @@ public class Event implements Parcelable, Comparable<Event> {
     private String mTitle;
     private String mLocation;
     private String mDescription;
-    private int mRepeatInterval;
-    private int mRepeatDay;
-    private int mRepeatPeriod;
-    private int mRepeatCount;
 
-    public Event() {}
+    public Event() {
+    }
 
     public Event(int reminderType, String title, String location, String description, long startDateTime, long endDateTime) {
         mEventType = reminderType;
@@ -101,29 +98,6 @@ public class Event implements Parcelable, Comparable<Event> {
         this.mLocation = mLocation;
     }
 
-    public int getRepeatCount() {
-        return mRepeatCount;
-    }
-
-    public int getRepeatInterval() {
-        return mRepeatInterval;
-    }
-
-    public int getRepeatDay() {
-        return mRepeatDay;
-    }
-
-    public long getRepeatUntil() {
-        return mRepeatPeriod;
-    }
-
-    public void setRepeat(int repeatPeriod, int repeatDay, int repeatInterval, int repeatCount) {
-        this.mRepeatPeriod = repeatPeriod;
-        this.mRepeatDay = repeatDay;
-        this.mRepeatInterval = repeatInterval;
-        this.mRepeatCount = repeatCount;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -146,7 +120,6 @@ public class Event implements Parcelable, Comparable<Event> {
 
     @Override
     public int compareTo(Event comparePost) {
-
         return getDateObject(comparePost.getStartDateTime()).compareTo(getDateObject(mStartDateTime));
     }
 

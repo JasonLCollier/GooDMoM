@@ -157,6 +157,10 @@ public class RemindersActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(RemindersActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.help_menu:
+                Intent helpIntent = new Intent(RemindersActivity.this, HelpActivity.class);
+                startActivity(helpIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

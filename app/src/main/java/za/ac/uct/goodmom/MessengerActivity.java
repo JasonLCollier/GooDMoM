@@ -195,6 +195,10 @@ public class MessengerActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(MessengerActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.help_menu:
+                Intent helpIntent = new Intent(MessengerActivity.this, HelpActivity.class);
+                startActivity(helpIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

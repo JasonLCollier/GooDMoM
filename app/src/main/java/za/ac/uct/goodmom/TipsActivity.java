@@ -159,6 +159,10 @@ public class TipsActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(TipsActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.help_menu:
+                Intent helpIntent = new Intent(TipsActivity.this, HelpActivity.class);
+                startActivity(helpIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -290,7 +294,7 @@ public class TipsActivity extends AppCompatActivity {
                     String text = null;
                     PostData post = new PostData();
                     String holdWebsiteIconUrl = null;
-                    while (eventType != XmlPullParser.END_DOCUMENT && postDataList.size() <= 7) {
+                    while (eventType != XmlPullParser.END_DOCUMENT && postDataList.size() <= 10) {
                         String name = parser.getName();
 
                         switch (eventType){
