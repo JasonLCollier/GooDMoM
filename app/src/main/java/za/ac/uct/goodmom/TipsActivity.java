@@ -36,10 +36,14 @@ import java.util.List;
 
 public class TipsActivity extends AppCompatActivity {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = TipsActivity.class.getSimpleName();
 
-    /** URL to query the dataset for information */
+    /**
+     * URL to query the dataset for information
+     */
     private static final String DSA_REQUEST_URL = "https://www.diabetessa.org.za/feed/";
     private static final String SLM_REQUEST_URL = "https://sweetlifemag.co.za/feed/";
     private static final String PC_REQUEST_URL = "https://pregnantchicken.com/feed/";
@@ -283,7 +287,7 @@ public class TipsActivity extends AppCompatActivity {
 
                     // Instantiate the parser
                     xmlFactoryObject = XmlPullParserFactory.newInstance();
-                    parser =xmlFactoryObject.newPullParser();
+                    parser = xmlFactoryObject.newPullParser();
 
                     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
                     parser.setInput(inputStream, null);
@@ -297,7 +301,7 @@ public class TipsActivity extends AppCompatActivity {
                     while (eventType != XmlPullParser.END_DOCUMENT && postDataList.size() <= 10) {
                         String name = parser.getName();
 
-                        switch (eventType){
+                        switch (eventType) {
                             case XmlPullParser.START_TAG:
                                 break;
 
@@ -307,19 +311,13 @@ public class TipsActivity extends AppCompatActivity {
 
                             case XmlPullParser.END_TAG:
 
-                                if(name.equals("title")){
+                                if (name.equals("title")) {
                                     post.setTitle(text);
-                                }
-
-                                else if(name.equals("pubDate")){
+                                } else if (name.equals("pubDate")) {
                                     post.setDate(convertDateString(text));
-                                }
-
-                                else if(name.equals("link")){
+                                } else if (name.equals("link")) {
                                     post.setUrl(text);
-                                }
-
-                                else if(name.equals("url")){
+                                } else if (name.equals("url")) {
                                     //post.setThumbUrl(text);
                                     holdWebsiteIconUrl = text;
                                 }
@@ -338,11 +336,10 @@ public class TipsActivity extends AppCompatActivity {
                     }
                 }
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Error response code: "+ urlConnection.getResponseCode());
+                Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             } catch (XmlPullParserException e) {
                 Log.e(LOG_TAG, "Error with pull parse", e);
-            }
-            finally {
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }

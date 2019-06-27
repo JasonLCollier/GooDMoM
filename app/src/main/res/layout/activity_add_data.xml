@@ -14,6 +14,23 @@
         tools:context=".AddDataActivity">
 
 
+        <TextView
+            android:id="@+id/glucose_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@string/glucose_instruction"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <LinearLayout
             android:id="@+id/glucose_container"
             android:layout_width="match_parent"
@@ -26,7 +43,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/glucose_instruction">
 
             <ImageView
                 android:id="@+id/imageView8"
@@ -36,12 +53,22 @@
 
             <TextView
                 android:id="@+id/glucose"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:textAppearance="@android:style/TextAppearance.Medium"
-                tools:text="5.0 mmol/L" />
+                tools:text="5.0" />
+
+            <TextView
+                android:id="@+id/unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:text="@string/glucose_unit"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+
         </LinearLayout>
 
 
@@ -88,7 +115,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/time_container">
+            app:layout_constraintTop_toBottomOf="@+id/glucose_time_spinner">
 
             <ImageView
                 android:id="@+id/imageView10"
@@ -112,16 +139,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/meal"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/location_container" />
+            app:layout_constraintTop_toBottomOf="@+id/data_instruction" />
 
         <EditText
             android:id="@+id/meal_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:backgroundTint="@color/primary"
@@ -130,7 +159,7 @@
             android:inputType="textCapWords"
             app:layout_constraintBottom_toBottomOf="@+id/meal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintStart_toEndOf="@+id/activity_description"
             app:layout_constraintTop_toTopOf="@+id/meal" />
 
         <TextView
@@ -149,11 +178,13 @@
             android:id="@+id/carbs_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintStart_toEndOf="@+id/activity_description"
             app:layout_constraintTop_toTopOf="@+id/carbs">
 
             <TextView
@@ -182,28 +213,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/activity"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/carbs" />
-
-        <EditText
-            android:id="@+id/activity_description_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:backgroundTint="@color/primary"
-            android:ems="10"
-            android:hint="@string/meal_hint"
-            android:inputType="textCapSentences"
-            app:layout_constraintBottom_toBottomOf="@+id/activity_description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/activity_description"
-            app:layout_constraintTop_toTopOf="@+id/activity_description" />
 
         <TextView
             android:id="@+id/activity_time"
@@ -225,7 +239,7 @@
             android:layout_marginLeft="16dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@+id/activity_time"
-            app:layout_constraintStart_toEndOf="@+id/activity_time">
+            app:layout_constraintStart_toEndOf="@+id/activity_description">
 
             <TextView
                 android:id="@+id/act_time_hrs_val"
@@ -293,8 +307,10 @@
             android:id="@+id/weight_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="@+id/activity_description_val"
+            app:layout_constraintStart_toEndOf="@+id/activity_description"
             app:layout_constraintTop_toTopOf="@+id/body_weight">
 
             <TextView
@@ -339,11 +355,11 @@
             android:layout_marginRight="16dp"
             android:backgroundTint="@color/primary"
             android:ems="10"
-            android:hint="@string/meal_hint"
+            android:hint="@string/medication_hint"
             android:inputType="textCapWords"
             app:layout_constraintBottom_toBottomOf="@+id/medication"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/medication"
+            app:layout_constraintStart_toEndOf="@+id/blood_pressure"
             app:layout_constraintTop_toTopOf="@+id/medication" />
 
         <Button
@@ -354,10 +370,153 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/add_data"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/medication_val" />
+            app:layout_constraintTop_toBottomOf="@+id/symptoms" />
+
+        <TextView
+            android:id="@+id/data_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/data_instruction"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/location_container" />
+
+        <Spinner
+            android:id="@+id/activity_type_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/activity_description"
+            app:layout_constraintTop_toTopOf="@+id/activity_description" />
+
+        <Spinner
+            android:id="@+id/glucose_time_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/time_container"
+            app:layout_constraintTop_toBottomOf="@+id/time_container" />
+
+        <TextView
+            android:id="@+id/blood_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/blood_pressure"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/medication" />
+
+        <TextView
+            android:id="@+id/symptoms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/symptoms"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/blood_pressure" />
+
+        <LinearLayout
+            android:id="@+id/systolic_pressure_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/blood_pressure"
+            app:layout_constraintTop_toTopOf="@+id/blood_pressure">
+
+            <TextView
+                android:id="@+id/systolic_pressure_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="0" />
+
+            <TextView
+                android:id="@+id/systolic_pressure_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/blood_pressure_unit"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/diastolic_pressure_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/forward_slash"
+            app:layout_constraintTop_toTopOf="@+id/systolic_pressure_container">
+
+            <TextView
+                android:id="@+id/diastolic_pressure_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="0" />
+
+            <TextView
+                android:id="@+id/diastolic_pressure_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/blood_pressure_unit"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/forward_slash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="/"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintStart_toEndOf="@+id/systolic_pressure_container"
+            app:layout_constraintTop_toTopOf="@+id/systolic_pressure_container" />
+
+        <Spinner
+            android:id="@+id/symptoms_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/blood_pressure"
+            app:layout_constraintTop_toTopOf="@+id/symptoms" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

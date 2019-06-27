@@ -6,14 +6,16 @@ import java.util.Date;
 public class GdData implements Comparable<GdData> {
     private double mGlucose, mActivityTime, mWeight;
     private long mDateTime;
-    private String mLocation, mMeal, mActivityDescription, mMedication;
+    private String mLocation, mMeal, mActivityDescription, mMedication, mGlucoseTime, mBloodPressure, mSymptoms;
     private int mCarbs;
 
-    public GdData() {}
+    public GdData() {
+    }
 
-    public GdData(double glucose, double activityTime, double weight, long dateTime, String location,
-                  String meal, String activityDescription, String medication, int carbs) {
+    public GdData(double glucose, String glucoseTime, double activityTime, double weight, long dateTime, String location,
+                  String meal, String activityDescription, String medication, int carbs, String bloodPressure, String symptoms) {
         mGlucose = glucose;
+        mGlucoseTime = glucoseTime;
         mActivityTime = activityTime;
         mWeight = weight;
         mDateTime = dateTime;
@@ -22,86 +24,112 @@ public class GdData implements Comparable<GdData> {
         mActivityDescription = activityDescription;
         mMedication = medication;
         mCarbs = carbs;
+        mBloodPressure = bloodPressure;
+        mSymptoms = symptoms;
     }
 
     public String getMedication() {
         return mMedication;
     }
 
+    public void setMedication(String mMedication) {
+        this.mMedication = mMedication;
+    }
+
     public String getMeal() {
         return mMeal;
-    }
-
-    public String getLocation() {
-        return mLocation;
-    }
-
-    public String getActivityDescription() {
-        return mActivityDescription;
-    }
-
-    public long getDateTime() {
-        return mDateTime;
-    }
-
-    public int getCarbs() {
-        return mCarbs;
-    }
-
-    public double getWeight() {
-        return mWeight;
-    }
-
-    public double getGlucose() {
-        return mGlucose;
-    }
-
-    public double getActivityTime() {
-        return mActivityTime;
     }
 
     public void setMeal(String meal) {
         mMeal = meal;
     }
 
+    public String getLocation() {
+        return mLocation;
+    }
+
     public void setLocation(String location) {
         mLocation = location;
     }
 
-    public void setGlucose(double glucose) {
-        this.mGlucose = glucose;
-    }
-
-    public void setDateTime(long dateTime) {
-        mDateTime = dateTime;
-    }
-
-    public void setCarbs(int carbs) {
-        mCarbs = carbs;
-    }
-
-    public void setActivityTime(double activityTime) {
-        mActivityTime = activityTime;
+    public String getActivityDescription() {
+        return mActivityDescription;
     }
 
     public void setActivityDescription(String activityDescription) {
         mActivityDescription = activityDescription;
     }
 
-    public void setMedication(String mMedication) {
-        this.mMedication = mMedication;
+    public long getDateTime() {
+        return mDateTime;
+    }
+
+    public void setDateTime(long dateTime) {
+        mDateTime = dateTime;
+    }
+
+    public int getCarbs() {
+        return mCarbs;
+    }
+
+    public void setCarbs(int carbs) {
+        mCarbs = carbs;
+    }
+
+    public double getWeight() {
+        return mWeight;
     }
 
     public void setWeight(double mWeight) {
         this.mWeight = mWeight;
     }
 
-    public Date getDateObject(long dateTime) {
+    public double getGlucose() {
+        return mGlucose;
+    }
+
+    public void setGlucose(double glucose) {
+        this.mGlucose = glucose;
+    }
+
+    public double getActivityTime() {
+        return mActivityTime;
+    }
+
+    public void setActivityTime(double activityTime) {
+        mActivityTime = activityTime;
+    }
+
+    public String getGlucoseTime() {
+        return mGlucoseTime;
+    }
+
+    public void setGlucoseTime(String glucoseTime) {
+        mGlucoseTime = glucoseTime;
+    }
+
+    public String getBloodPressure() {
+        return mBloodPressure;
+    }
+
+    public void setBloodPressure(String bloodPressure) {
+        mBloodPressure = bloodPressure;
+    }
+
+    public String getSymptoms() {
+        return mSymptoms;
+    }
+
+    public void setSymptoms(String symptoms) {
+        mSymptoms = symptoms;
+    }
+
+    public Date dateObject(long dateTime) {
         Date dateObject = new Date(dateTime);
         return dateObject;
     }
 
-    public int getHoursOfMonth() {
+    public int hoursOfMonth() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH");
         int hours = Integer.parseInt(sdf.format(new Date(mDateTime)));
         sdf = new SimpleDateFormat("dd");
@@ -109,7 +137,7 @@ public class GdData implements Comparable<GdData> {
         return hours;
     }
 
-    public int getMonth() {
+    public int month() {
         SimpleDateFormat sdf = new SimpleDateFormat("MM");
         return Integer.parseInt(sdf.format(new Date(mDateTime)));
     }
@@ -117,6 +145,6 @@ public class GdData implements Comparable<GdData> {
     @Override
     public int compareTo(GdData comparePost) {
 
-        return getDateObject(mDateTime).compareTo(getDateObject(comparePost.getDateTime()));
+        return dateObject(mDateTime).compareTo(dateObject(comparePost.getDateTime()));
     }
 }

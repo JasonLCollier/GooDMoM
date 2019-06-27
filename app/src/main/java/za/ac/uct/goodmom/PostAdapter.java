@@ -15,19 +15,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
     private List<PostData> mPostsList;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView titleTextView, dateTextView;
-        public ImageView thumbImageView;
-
-        public MyViewHolder(View view) {
-            super(view);
-            thumbImageView = (ImageView) view.findViewById(R.id.post_thumb);
-            titleTextView = (TextView) view.findViewById(R.id.post_title);
-            dateTextView = (TextView) view.findViewById(R.id.post_date);
-        }
-    }
-
-
     public PostAdapter(List<PostData> postsList) {
         mPostsList = postsList;
     }
@@ -45,12 +32,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         PostData post = mPostsList.get(position);
 
         boolean isThumbUrl = post.getThumbUrl() != null;
-        if(isThumbUrl) {
+        if (isThumbUrl) {
             Glide.with(holder.thumbImageView.getContext())
                     .load(post.getThumbUrl())
                     .into(holder.thumbImageView);
-        }
-        else {
+        } else {
             // holder image
         }
 
@@ -61,5 +47,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return mPostsList.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView titleTextView, dateTextView;
+        public ImageView thumbImageView;
+
+        public MyViewHolder(View view) {
+            super(view);
+            thumbImageView = (ImageView) view.findViewById(R.id.post_thumb);
+            titleTextView = (TextView) view.findViewById(R.id.post_title);
+            dateTextView = (TextView) view.findViewById(R.id.post_date);
+        }
     }
 }

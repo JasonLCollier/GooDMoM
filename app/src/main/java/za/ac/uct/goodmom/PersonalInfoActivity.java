@@ -12,8 +12,8 @@ import android.widget.Spinner;
 
 public class PersonalInfoActivity extends AppCompatActivity {
 
-    private Button mSaveButton;
     String mProvince;
+    private Button mSaveButton;
     private EditText mIdText, mPhoneText, mHouseText, mStreetText, mCityText, mPostText;
     private Spinner mProvSpinner;
 

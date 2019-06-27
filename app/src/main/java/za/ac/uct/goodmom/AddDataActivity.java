@@ -34,20 +34,23 @@ public class AddDataActivity extends AppCompatActivity {
     // Tag for the log messages
     public static final String LOG_TAG = AddDataActivity.class.getSimpleName();
 
-    private EditText mMealDescrText, mActivityDescrText, mMedicationText, mDoubleNumberText;
-    private TextView mGlucoseText, mDateTimeText, mCarbsText, mActHrsText, mActMinText, mWeightText, mCancelButton, mOkButton;
-    private LinearLayout mGlucoseContainer, mTimeContainer, mLocationContainer, mCarbsContainer, mWeightContainer, mActHrsContainer, mActMinContainer;
+    private EditText mMealDescrText, mMedicationText, mDoubleNumberText;
+    private TextView mGlucoseText, mDateTimeText, mCarbsText, mActHrsText, mActMinText, mWeightText,
+            mCancelButton, mOkButton, mSystolicText, mDiastolicText;
+    private LinearLayout mGlucoseContainer, mTimeContainer, mLocationContainer, mCarbsContainer,
+            mWeightContainer, mActHrsContainer, mActMinContainer, mSystolicPressureContainer, mDiastolicPressureContainer;
     private Button mAddDataButton;
 
     private DatePickerDialog mDatePickerDialog;
     private TimePickerDialog mTimePickerDialog;
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
-    private Spinner mLocationSpinner;
+    private Spinner mGlucoseTimeSpinner, mLocationSpinner, mActTypeSpinner;
 
-    private String mMealDescr, mActivityDescr, mMedication, mDateTime, mLocation, mActHrsStr, mActMinStr, mGlucoseStr, mCarbsStr, mWeightStr;
+    private String mMealDescr, mMedication, mDateTime, mGlucoseTime, mLocation, mActType, mActHrsStr,
+            mActMinStr, mGlucoseStr, mCarbsStr, mWeightStr, mDiastolicStr, mSystolicStr, mBloodPressureStr;
     private double mGlucose, mWeight, mActTime;
-    private int mCarbs, mYear, mMonth, mDay, mHour, mMinute, mEventType, mDayOfWeek, mActHrs, mActMin;
+    private int mCarbs, mYear, mMonth, mDay, mHour, mMinute, mActHrs, mActMin, mSystolic, mDiastolic;
 
     private GdData mNewData;
 
@@ -77,7 +80,6 @@ public class AddDataActivity extends AppCompatActivity {
         mLocationSpinner = findViewById(R.id.location);
         mMealDescrText = findViewById(R.id.meal_val);
         mCarbsText = findViewById(R.id.carbs_val);
-        mActivityDescrText = findViewById(R.id.activity_description_val);
         mActHrsText = findViewById(R.id.act_time_hrs_val);
         mActMinText = findViewById(R.id.act_time_min_val);
         mWeightText = findViewById(R.id.body_weight_val);
@@ -90,6 +92,12 @@ public class AddDataActivity extends AppCompatActivity {
         mWeightContainer = findViewById(R.id.weight_container);
         mActHrsContainer = findViewById(R.id.act_hrs_container);
         mActMinContainer = findViewById(R.id.act_min_container);
+        mActTypeSpinner = findViewById(R.id.activity_type_spinner);
+        mGlucoseTimeSpinner = findViewById(R.id.glucose_time_spinner);
+        mSystolicPressureContainer = findViewById(R.id.systolic_pressure_container);
+        mDiastolicPressureContainer = findViewById(R.id.diastolic_pressure_container);
+        mSystolicText = findViewById(R.id.systolic_pressure_val);
+        mDiastolicText = findViewById(R.id.diastolic_pressure_val);
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
@@ -108,8 +116,13 @@ public class AddDataActivity extends AppCompatActivity {
         // Initialise carbs view
         mCarbsStr = "0";
         mCarbsText.setText(mCarbsStr);
+        // Initialise BP view
+        mSystolicStr = "0";
+        mSystolicText.setText(mSystolicStr);
+        mDiastolicStr = "0";
+        mDiastolicText.setText(mDiastolicStr);
 
-       // On click listener for glucose value
+        // On click listener for glucose value
         mGlucoseContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,6 +194,27 @@ public class AddDataActivity extends AppCompatActivity {
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.glucose_time_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mGlucoseTimeSpinner.setAdapter(adapter);
+
+        // On click listener for location value
+        mGlucoseTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mGlucoseTime = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mGlucoseTime = (String) parent.getItemAtPosition(0);
+            }
+        });
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
                 R.array.locations_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -196,7 +230,7 @@ public class AddDataActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mEventType = 0;
+                mLocation = (String) parent.getItemAtPosition(0);
             }
         });
 
@@ -234,6 +268,27 @@ public class AddDataActivity extends AppCompatActivity {
                 });
 
                 mDialog.show();
+            }
+        });
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.act_type_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mActTypeSpinner.setAdapter(adapter);
+
+        // On click listener for location value
+        mActTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mActType = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mActType = (String) parent.getItemAtPosition(0);
             }
         });
 
@@ -358,20 +413,101 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
+        //On click listener for carbs value
+        mSystolicPressureContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(AddDataActivity.this);
+                mDialog.setContentView(R.layout.dialog_number_picker);
+
+                // Set up number picker
+                mNumberPicker = mDialog.findViewById(R.id.number_picker);
+                mNumberPicker.setMinValue(90);
+                mNumberPicker.setMaxValue(180);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the carbs value
+                        mSystolic = mNumberPicker.getValue();
+                        mSystolicStr = String.valueOf(mSystolic);
+                        mSystolicText.setText(mSystolicStr);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
+        //On click listener for carbs value
+        mDiastolicPressureContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set up dialog
+                mDialog = new Dialog(AddDataActivity.this);
+                mDialog.setContentView(R.layout.dialog_number_picker);
+
+                // Set up number picker
+                mNumberPicker = mDialog.findViewById(R.id.number_picker);
+                mNumberPicker.setMinValue(60);
+                mNumberPicker.setMaxValue(120);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the carbs value
+                        mDiastolic = mNumberPicker.getValue();
+                        mDiastolicStr = String.valueOf(mDiastolic);
+                        mDiastolicText.setText(mDiastolicStr);
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
         // On click listener for add data button
         mAddDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get values from edit text views
                 mMealDescr = mMealDescrText.getText().toString();
-                mActivityDescr = mActivityDescrText.getText().toString();
                 mMedication = mMedicationText.getText().toString();
 
+                // Prepare variables
                 mActTime = (double) mActHrs + ((double) mActMin / (double) 60);
+                mBloodPressureStr = mSystolicStr + "/" + mDiastolicStr;
 
                 // Create new GdData Object
-                mNewData = new GdData(mGlucose, mActTime, mWeight, convertTimeToLong(mDateTime), mLocation,
-                        mMealDescr, mActivityDescr, mMedication, mCarbs);
+                mNewData = new GdData(mGlucose, mGlucoseTime, mActTime, mWeight, convertTimeToLong(mDateTime), mLocation,
+                        mMealDescr, mActType, mMedication, mCarbs, mBloodPressureStr, "");
 
                 // Push new event to database
                 mDataDatabaseReference.push().setValue(mNewData);

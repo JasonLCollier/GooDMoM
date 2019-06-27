@@ -8,7 +8,9 @@ import java.util.Date;
 
 public class PostData implements Comparable<PostData> {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = PostData.class.getSimpleName();
 
     private String mUrl;
@@ -16,9 +18,10 @@ public class PostData implements Comparable<PostData> {
     private String mDate;
     private String mThumbUrl;
 
-    public PostData(){}
+    public PostData() {
+    }
 
-    public PostData(String url, String title, String date, String thumbUrl){
+    public PostData(String url, String title, String date, String thumbUrl) {
         mUrl = url;
         mTitle = title;
         mDate = date;
@@ -29,28 +32,28 @@ public class PostData implements Comparable<PostData> {
         return mUrl;
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public String getDate() {
-        return mDate;
-    }
-
-    public String getThumbUrl() {
-        return mThumbUrl;
-    }
-
     public void setUrl(String thumbUrl) {
         mUrl = thumbUrl;
+    }
+
+    public String getTitle() {
+        return mTitle;
     }
 
     public void setTitle(String title) {
         mTitle = title;
     }
 
+    public String getDate() {
+        return mDate;
+    }
+
     public void setDate(String date) {
         mDate = date;
+    }
+
+    public String getThumbUrl() {
+        return mThumbUrl;
     }
 
     public void setThumbUrl(String thumbUrl) {

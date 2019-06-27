@@ -118,9 +118,8 @@ public class DashboardActivity extends AppCompatActivity {
         if (user != null) {
             mUsername = user.getDisplayName();
             mUserId = user.getUid();
-        }
-        else {
-            mUsername =  "Unauthorized";
+        } else {
+            mUsername = "Unauthorized";
             mUserId = "Unauthorized";
         }
         mGdDataDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("gdData");
@@ -243,8 +242,8 @@ public class DashboardActivity extends AppCompatActivity {
         mEntries.clear();
 
         for (int i = 0; i < mGdDataList.size(); i++) {
-            if (mGdDataList.get(i).getMonth() - 1 == mMonthOfYear)
-                mEntries.add(new Entry((float) mGdDataList.get(i).getHoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+            if (mGdDataList.get(i).month() - 1 == mMonthOfYear)
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
         }
 
         initialiseChart();
@@ -363,7 +362,7 @@ public class DashboardActivity extends AppCompatActivity {
         int zeroWeightCount = 0; //checks if weight is not entered and does not include it in avg calc
 
         for (int i = 0; i < mGdDataList.size(); i++) {
-            if (mGdDataList.get(i).getMonth() - 1 == mMonthOfYear) {
+            if (mGdDataList.get(i).month() - 1 == mMonthOfYear) {
                 glucose += mGdDataList.get(i).getGlucose();
                 carbs += mGdDataList.get(i).getCarbs();
                 activityTime += mGdDataList.get(i).getActivityTime();
@@ -477,8 +476,8 @@ public class DashboardActivity extends AppCompatActivity {
                     //mDataAdapter.notifyDataSetChanged();
 
                     // add data to entries list if it is from the selected month
-                    if (data.getMonth() - 1 == mMonthOfYear)
-                        mEntries.add(new Entry((float) data.getHoursOfMonth(), (float) data.getGlucose()));
+                    if (data.month() - 1 == mMonthOfYear)
+                        mEntries.add(new Entry((float) data.hoursOfMonth(), (float) data.getGlucose()));
 
                 }
 

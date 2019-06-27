@@ -191,13 +191,13 @@ public class AddEventActivity extends AppCompatActivity {
                 mTimePickerDialog = new TimePickerDialog(AddEventActivity.this, R.style.DialogTheme,
                         new TimePickerDialog.OnTimeSetListener() {
 
-                    @Override
-                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                        // set hour of day and minute value in the edit text
-                        mStartTimeStr = createTimeString(selectedHour, selectedMinute);
-                        mStartTimeText.setText(mStartTimeStr);
-                    }
-                }, mHour, mMinute, true);// Yes 24 hour time
+                            @Override
+                            public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                // set hour of day and minute value in the edit text
+                                mStartTimeStr = createTimeString(selectedHour, selectedMinute);
+                                mStartTimeText.setText(mStartTimeStr);
+                            }
+                        }, mHour, mMinute, true);// Yes 24 hour time
                 mTimePickerDialog.show();
 
             }
@@ -212,13 +212,13 @@ public class AddEventActivity extends AppCompatActivity {
                 mTimePickerDialog = new TimePickerDialog(AddEventActivity.this, R.style.DialogTheme,
                         new TimePickerDialog.OnTimeSetListener() {
 
-                    @Override
-                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                        // set hour of day and minute value in the edit text
-                        mEndTimeStr = createTimeString(selectedHour, selectedMinute);
-                        mEndTimeText.setText(mEndTimeStr);
-                    }
-                }, mHour, mMinute, true);// Yes 24 hour time
+                            @Override
+                            public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                                // set hour of day and minute value in the edit text
+                                mEndTimeStr = createTimeString(selectedHour, selectedMinute);
+                                mEndTimeText.setText(mEndTimeStr);
+                            }
+                        }, mHour, mMinute, true);// Yes 24 hour time
                 mTimePickerDialog.show();
 
             }
