@@ -47,14 +47,14 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="21dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:progress="1"
         app:layout_constraintEnd_toStartOf="@+id/due_date_display_text"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/due_date"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
@@ -76,12 +76,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
-        app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
+        app:layout_constraintTop_toTopOf="@+id/chart_type" />
 
     <Spinner
         android:id="@+id/month"
@@ -89,12 +88,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
+        app:layout_constraintTop_toTopOf="@+id/chart_type" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -133,55 +131,71 @@
             android:id="@+id/glucose_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_text_circle"
             android:gravity="center"
             android:textColor="@color/icons"
-            tools:text="5.7 mmol/L" />
+            tools:text="5.7\nmmol/L" />
 
         <TextView
             android:id="@+id/carb_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_text_circle"
             android:gravity="center"
             android:textColor="@color/icons"
-            tools:text="8500 carbs" />
+            tools:text="8500\ncarbs" />
 
         <TextView
             android:id="@+id/activity_time_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_text_circle"
             android:gravity="center"
             android:textColor="@color/icons"
-            tools:text="800 min" />
+            tools:text="800\nmin" />
 
         <TextView
             android:id="@+id/weight_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_text_circle"
             android:gravity="center"
             android:textColor="@color/icons"
-            tools:text="70.5 Kg" />
+            tools:text="70.5\nKg" />
+
+        <TextView
+            android:id="@+id/bp_display_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_circle"
+            android:gravity="center"
+            android:textColor="@color/icons"
+            tools:text="120/80\nmmHg" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/text_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/navigation"
@@ -190,7 +204,7 @@
 
         <TextView
             android:id="@+id/avg_glucose_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -199,7 +213,7 @@
 
         <TextView
             android:id="@+id/tot_carbs_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -208,7 +222,7 @@
 
         <TextView
             android:id="@+id/tot_exercise_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -217,11 +231,20 @@
 
         <TextView
             android:id="@+id/avg_weight_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/avg_weight"
+            android:textColor="@color/primary" />
+
+        <TextView
+            android:id="@+id/avg_bp_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/avg_blood_pressure"
             android:textColor="@color/primary" />
     </LinearLayout>
 
@@ -235,5 +258,17 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigation" />
+
+    <TextView
+        android:id="@+id/due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/due_date"
+        android:textColor="@color/primary_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

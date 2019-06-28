@@ -151,8 +151,10 @@
     <string name="tot_act_time">Total Exercise</string>
     <string name="avg_weight">Average Weight</string>
     <string name="blood_pressure">B. Pressure</string>
+    <string name="avg_blood_pressure">Average BP</string>
     <string name="blood_pressure_unit">mmHg</string>
     <string name="symptoms">Symptoms</string>
+    <string name="select_symptoms">Select symptoms</string>
 
     <string-array name="glucose_time_array">
         <item>Before meal</item>
@@ -172,16 +174,13 @@
         <item>Yoga</item>
     </string-array>
 
-    <string-array name="symptoms_array">
-        <item>None</item>
-        <item>Severe thirst</item>
-        <item>Severe fatigue</item>
-        <item>Abdominal pain</item>
-        <item>Severe nausea</item>
-        <item>Blurred vision</item>
-        <item>Persistent headache</item>
-        <item>Flu</item>
-    </string-array>
+    <string name="severe_thirst">Severe thirst</string>
+    <string name="severe_fatigue">Severe fatigue</string>
+    <string name="abdominal_pain">Abdominal pain</string>
+    <string name="severe_nausea">Severe nausea</string>
+    <string name="blurred_vision">Blurred vision</string>
+    <string name="persistent_headache">Persistent headache</string>
+    <string name="flu">Flu</string>
 
     <string-array name="month_array">
         <item>January</item>

@@ -457,7 +457,7 @@
                 android:id="@+id/systolic_pressure_val"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="8dp"
                 android:textAppearance="@android:style/TextAppearance.Medium"
                 tools:text="0" />
 
@@ -473,8 +473,8 @@
             android:id="@+id/diastolic_pressure_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:orientation="horizontal"
             app:layout_constraintStart_toEndOf="@+id/forward_slash"
             app:layout_constraintTop_toTopOf="@+id/systolic_pressure_container">
@@ -483,7 +483,7 @@
                 android:id="@+id/diastolic_pressure_val"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="8dp"
                 android:textAppearance="@android:style/TextAppearance.Medium"
                 tools:text="0" />
 
@@ -499,21 +499,24 @@
             android:id="@+id/forward_slash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:text="/"
             android:textAppearance="@android:style/TextAppearance.Medium"
             app:layout_constraintStart_toEndOf="@+id/systolic_pressure_container"
             app:layout_constraintTop_toTopOf="@+id/systolic_pressure_container" />
 
-        <Spinner
-            android:id="@+id/symptoms_spinner"
+        <TextView
+            android:id="@+id/select_symtoms_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/select_symptoms"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@color/primary_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/blood_pressure"
             app:layout_constraintTop_toTopOf="@+id/symptoms" />

@@ -83,7 +83,7 @@ public class DashboardActivity extends AppCompatActivity {
     private LineChart mChart;
     private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner;
     private ProgressBar mProgressBar;
-    private TextView mDueDateText, mGlucoseText, mCarbText, mActivityTimeText, mWeightText;
+    private TextView mDueDateText, mGlucoseText, mCarbText, mActivityTimeText, mWeightText, mBPText;
 
     private LineDataSet mDataSet;
     private LineData mLineData;
@@ -137,6 +137,7 @@ public class DashboardActivity extends AppCompatActivity {
         mCarbText = findViewById(R.id.carb_display_text);
         mActivityTimeText = findViewById(R.id.activity_time_display_text);
         mWeightText = findViewById(R.id.weight_display_text);
+        mBPText = findViewById(R.id.bp_display_text);
 
         // Initialise chart, progress bar, display text
         initialiseProgressBar();
@@ -352,41 +353,62 @@ public class DashboardActivity extends AppCompatActivity {
     private void initialiseDisplayText() {
         DecimalFormat df = new DecimalFormat("#.#");
 
-        String glucoseStr, carbsStr, activityStr, weightStr;
+        String glucoseStr, carbsStr, activityStr, weightStr, bpStr;
 
         double glucose = 0;
         int carbs = 0;
         double activityTime = 0;
         double weight = 0;
         int count = 0;
+        double systolic = 0;
+        double diastolic = 0;
         int zeroWeightCount = 0; //checks if weight is not entered and does not include it in avg calc
+        int zeroGlucCount = 0; //checks if gluc is not entered and does not include it in avg calc
+        int zeroBpCount = 0; //checks if BP is not entered and does not include it in avg calc
 
         for (int i = 0; i < mGdDataList.size(); i++) {
             if (mGdDataList.get(i).month() - 1 == mMonthOfYear) {
                 glucose += mGdDataList.get(i).getGlucose();
+                if (mGdDataList.get(i).getGlucose() == 0)
+                    zeroGlucCount++;
+
                 carbs += mGdDataList.get(i).getCarbs();
+
                 activityTime += mGdDataList.get(i).getActivityTime();
+
                 weight += mGdDataList.get(i).getWeight();
                 if (mGdDataList.get(i).getWeight() == 0)
                     zeroWeightCount++;
+
+
+                String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                systolic += Double.valueOf(parts[0]);
+                diastolic += Double.valueOf(parts[1]);
+                if (Double.valueOf(parts[0]) == 0)
+                    zeroBpCount++;
+
                 count++;
             }
         }
 
         if (count != 0) {
-            glucose = glucose / count;
+            glucose = glucose / (count - zeroGlucCount);
             weight = weight / (count - zeroWeightCount);
+            systolic = systolic / (count - zeroBpCount);
+            diastolic = diastolic / (count - zeroBpCount);
         }
 
-        glucoseStr = df.format(glucose) + "\n mmol/L";
-        carbsStr = Integer.toString(carbs) + "\n g";
-        activityStr = df.format(activityTime) + "\n hrs";
-        weightStr = df.format(weight) + "\n Kg";
+        glucoseStr = df.format(glucose) + "\nmmol/L";
+        carbsStr = carbs + "\ng";
+        activityStr = df.format(activityTime) + "\nhrs";
+        weightStr = df.format(weight) + "\nKg";
+        bpStr = (int) systolic + "/" + (int) diastolic + "\nmmHg";
 
         mGlucoseText.setText(glucoseStr);
         mCarbText.setText(carbsStr);
         mActivityTimeText.setText(activityStr);
         mWeightText.setText(weightStr);
+        mBPText.setText(bpStr);
 
     }
 

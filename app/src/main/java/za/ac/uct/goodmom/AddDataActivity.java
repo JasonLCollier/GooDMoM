@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,20 +36,21 @@ public class AddDataActivity extends AppCompatActivity {
     public static final String LOG_TAG = AddDataActivity.class.getSimpleName();
 
     private EditText mMealDescrText, mMedicationText, mDoubleNumberText;
-    private TextView mGlucoseText, mDateTimeText, mCarbsText, mActHrsText, mActMinText, mWeightText,
-            mCancelButton, mOkButton, mSystolicText, mDiastolicText;
+    CheckBox mThirstCB, mFatigueCB, mPainCB, mNauseaCB, mVisionCB, mHeadacheCB, mFlueCB;
     private LinearLayout mGlucoseContainer, mTimeContainer, mLocationContainer, mCarbsContainer,
             mWeightContainer, mActHrsContainer, mActMinContainer, mSystolicPressureContainer, mDiastolicPressureContainer;
     private Button mAddDataButton;
+    private TextView mGlucoseText, mDateTimeText, mCarbsText, mActHrsText, mActMinText, mWeightText,
+            mCancelButton, mOkButton, mSystolicText, mDiastolicText, mSymptomsText;
 
     private DatePickerDialog mDatePickerDialog;
     private TimePickerDialog mTimePickerDialog;
     private Dialog mDialog;
     private NumberPicker mNumberPicker;
     private Spinner mGlucoseTimeSpinner, mLocationSpinner, mActTypeSpinner;
-
     private String mMealDescr, mMedication, mDateTime, mGlucoseTime, mLocation, mActType, mActHrsStr,
-            mActMinStr, mGlucoseStr, mCarbsStr, mWeightStr, mDiastolicStr, mSystolicStr, mBloodPressureStr;
+            mActMinStr, mGlucoseStr, mCarbsStr, mWeightStr, mDiastolicStr, mSystolicStr,
+            mBloodPressureStr, mSymptomsStr;
     private double mGlucose, mWeight, mActTime;
     private int mCarbs, mYear, mMonth, mDay, mHour, mMinute, mActHrs, mActMin, mSystolic, mDiastolic;
 
@@ -98,6 +100,7 @@ public class AddDataActivity extends AppCompatActivity {
         mDiastolicPressureContainer = findViewById(R.id.diastolic_pressure_container);
         mSystolicText = findViewById(R.id.systolic_pressure_val);
         mDiastolicText = findViewById(R.id.diastolic_pressure_val);
+        mSymptomsText = findViewById(R.id.select_symtoms_text_view);
 
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
@@ -413,7 +416,7 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
-        //On click listener for carbs value
+        //On click listener for value
         mSystolicPressureContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -453,7 +456,7 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
-        //On click listener for carbs value
+        //On click listener for value
         mDiastolicPressureContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -493,6 +496,64 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
 
+        //On click listener for value
+        mSymptomsText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Initialise symptoms
+                mSymptomsStr = "";
+
+                // Set up dialog
+                mDialog = new Dialog(AddDataActivity.this);
+                mDialog.setContentView(R.layout.dialog_symptoms);
+
+                // Set up check boxes
+                mThirstCB = mDialog.findViewById(R.id.thirst_cb);
+                mFatigueCB = mDialog.findViewById(R.id.fatigue_cb);
+                mPainCB = mDialog.findViewById(R.id.pain_cb);
+                mNauseaCB = mDialog.findViewById(R.id.nausea_cb);
+                mVisionCB = mDialog.findViewById(R.id.vision_cb);
+                mHeadacheCB = mDialog.findViewById(R.id.headache_cb);
+                mFlueCB = mDialog.findViewById(R.id.flu_cb);
+
+                mCancelButton = mDialog.findViewById(R.id.cancel_button);
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mOkButton = mDialog.findViewById(R.id.ok_button);
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Get the symptoms value
+                        if (mThirstCB.isChecked())
+                            mSymptomsStr += mThirstCB.getText().toString() + ", ";
+                        if (mFatigueCB.isChecked())
+                            mSymptomsStr += mFatigueCB.getText().toString() + ", ";
+                        if (mPainCB.isChecked())
+                            mSymptomsStr += mPainCB.getText().toString() + ", ";
+                        if (mNauseaCB.isChecked())
+                            mSymptomsStr += mNauseaCB.getText().toString() + ", ";
+                        if (mVisionCB.isChecked())
+                            mSymptomsStr += mVisionCB.getText().toString() + ", ";
+                        if (mHeadacheCB.isChecked())
+                            mSymptomsStr += mHeadacheCB.getText().toString() + ", ";
+                        if (mFlueCB.isChecked())
+                            mSymptomsStr += mFlueCB.getText().toString() + ", ";
+
+                        // Exit dialog
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
+            }
+        });
+
         // On click listener for add data button
         mAddDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -507,7 +568,7 @@ public class AddDataActivity extends AppCompatActivity {
 
                 // Create new GdData Object
                 mNewData = new GdData(mGlucose, mGlucoseTime, mActTime, mWeight, convertTimeToLong(mDateTime), mLocation,
-                        mMealDescr, mActType, mMedication, mCarbs, mBloodPressureStr, "");
+                        mMealDescr, mActType, mMedication, mCarbs, mBloodPressureStr, mSymptomsStr);
 
                 // Push new event to database
                 mDataDatabaseReference.push().setValue(mNewData);
