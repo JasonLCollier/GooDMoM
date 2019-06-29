@@ -142,6 +142,11 @@ public class GdData implements Comparable<GdData> {
         return Integer.parseInt(sdf.format(new Date(mDateTime)));
     }
 
+    public int day() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+        return Integer.parseInt(sdf.format(new Date(mDateTime)));
+    }
+
     @Override
     public int compareTo(GdData comparePost) {
 

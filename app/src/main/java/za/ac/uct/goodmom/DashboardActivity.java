@@ -81,7 +81,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private FloatingActionButton mFab;
     private LineChart mChart;
-    private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner;
+    private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner, mDaySpinner;
     private ProgressBar mProgressBar;
     private TextView mDueDateText, mGlucoseText, mCarbText, mActivityTimeText, mWeightText, mBPText;
 
@@ -96,7 +96,7 @@ public class DashboardActivity extends AppCompatActivity {
     private User mUser;
 
     private String mUsername, mUserId;
-    private int mYear, mMonth, mDay, mMonthOfYear;
+    private int mYear, mMonth, mDay, mMonthOfYear, mDayOfMonth, mPeriod;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
@@ -138,6 +138,7 @@ public class DashboardActivity extends AppCompatActivity {
         mActivityTimeText = findViewById(R.id.activity_time_display_text);
         mWeightText = findViewById(R.id.weight_display_text);
         mBPText = findViewById(R.id.bp_display_text);
+        mDaySpinner = findViewById(R.id.day_in_month);
 
         // Initialise chart, progress bar, display text
         initialiseProgressBar();
@@ -150,8 +151,13 @@ public class DashboardActivity extends AppCompatActivity {
         mMonth = c.get(Calendar.MONTH); // current month
         mDay = c.get(Calendar.DAY_OF_MONTH); // current day
 
-        // Initialise mMonthOfYear selector to current month
+        // Initialise spinner default values
+        mPeriod = 1; // 0 = day; 1 = month; 2 = gestation
+        mDayOfMonth = mDay;
         mMonthOfYear = mMonth;
+
+        // Hide day spinner for default layout
+        mDaySpinner.setVisibility(View.GONE);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -170,6 +176,53 @@ public class DashboardActivity extends AppCompatActivity {
         mPeriodSpinner.setAdapter(adapter);
         // Default selection on month
         mPeriodSpinner.setSelection(1);
+
+        mPeriodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mPeriod = position;
+
+                if (mPeriod == 0) {
+                    mDaySpinner.setVisibility(View.VISIBLE);
+                } else if (mPeriod == 1) {
+                    mDaySpinner.setVisibility(View.GONE);
+                } else if (mPeriod == 2) {
+                    mMonthSpinner.setVisibility(View.GONE);
+                    mDaySpinner.setVisibility(View.GONE);
+                }
+
+                updateChart();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mPeriod = 1;
+                mDaySpinner.setVisibility(View.GONE);
+            }
+        });
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.day_in_month_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mDaySpinner.setAdapter(adapter);
+        // Default selection on current month
+        mDaySpinner.setSelection(mDayOfMonth - 1);
+
+        mDaySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mDayOfMonth = position + 1;
+                updateChart();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mDayOfMonth = mMonth;
+            }
+        });
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         adapter = ArrayAdapter.createFromResource(this,
@@ -243,7 +296,14 @@ public class DashboardActivity extends AppCompatActivity {
         mEntries.clear();
 
         for (int i = 0; i < mGdDataList.size(); i++) {
-            if (mGdDataList.get(i).month() - 1 == mMonthOfYear)
+            // day
+            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() - 1 == mDayOfMonth)
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+                // month
+            else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear)
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+                // full gestation
+            else if (mPeriod == 2)
                 mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
         }
 

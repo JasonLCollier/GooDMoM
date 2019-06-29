@@ -104,9 +104,9 @@ public class ProfileActivity extends AppCompatActivity {
                 // Default layout uses conception date
                 mCalculationMethod = 0;
                 mConceptionDateText.setVisibility(View.VISIBLE);
-                mLastPeriodText.setVisibility(View.INVISIBLE);
-                mCycleLengthText.setVisibility(View.INVISIBLE);
-                mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+                mLastPeriodText.setVisibility(View.GONE);
+                mCycleLengthText.setVisibility(View.GONE);
+                mCycleLengthSpinner.setVisibility(View.GONE);
 
                 // Get today's date
                 final Calendar c = Calendar.getInstance();
@@ -136,12 +136,12 @@ public class ProfileActivity extends AppCompatActivity {
                         if (position == 0) {
                             mCalculationMethod = 0;
                             mConceptionDateText.setVisibility(View.VISIBLE);
-                            mLastPeriodText.setVisibility(View.INVISIBLE);
-                            mCycleLengthText.setVisibility(View.INVISIBLE);
-                            mCycleLengthSpinner.setVisibility(View.INVISIBLE);
+                            mLastPeriodText.setVisibility(View.GONE);
+                            mCycleLengthText.setVisibility(View.GONE);
+                            mCycleLengthSpinner.setVisibility(View.GONE);
                         } else if (position == 1) {
                             mCalculationMethod = 1;
-                            mConceptionDateText.setVisibility(View.INVISIBLE);
+                            mConceptionDateText.setVisibility(View.GONE);
                             mLastPeriodText.setVisibility(View.VISIBLE);
                             mCycleLengthText.setVisibility(View.VISIBLE);
                             mCycleLengthSpinner.setVisibility(View.VISIBLE);
