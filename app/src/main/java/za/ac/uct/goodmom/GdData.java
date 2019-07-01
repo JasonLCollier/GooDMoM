@@ -129,6 +129,12 @@ public class GdData implements Comparable<GdData> {
         return dateObject;
     }
 
+    public int hoursOfDay() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH");
+        int hours = Integer.parseInt(sdf.format(new Date(mDateTime)));
+        return hours;
+    }
+
     public int hoursOfMonth() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH");
         int hours = Integer.parseInt(sdf.format(new Date(mDateTime)));

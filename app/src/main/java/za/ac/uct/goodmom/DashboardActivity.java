@@ -28,6 +28,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
@@ -184,8 +185,10 @@ public class DashboardActivity extends AppCompatActivity {
 
                 if (mPeriod == 0) {
                     mDaySpinner.setVisibility(View.VISIBLE);
+                    mMonthSpinner.setVisibility(View.VISIBLE);
                 } else if (mPeriod == 1) {
                     mDaySpinner.setVisibility(View.GONE);
+                    mMonthSpinner.setVisibility(View.VISIBLE);
                 } else if (mPeriod == 2) {
                     mMonthSpinner.setVisibility(View.GONE);
                     mDaySpinner.setVisibility(View.GONE);
@@ -297,14 +300,19 @@ public class DashboardActivity extends AppCompatActivity {
 
         for (int i = 0; i < mGdDataList.size(); i++) {
             // day
-            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() - 1 == mDayOfMonth)
-                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth)
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfDay(), (float) mGdDataList.get(i).getGlucose()));
                 // month
             else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear)
                 mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
                 // full gestation
-            else if (mPeriod == 2)
-                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+            else if (mPeriod == 2) {
+                // get conceptionDate
+                // get dueDate
+                // days = mGdDataList.get(i).getDate() - conceptionDate
+                // get average of all glucose levels on 1 day and add that day and average glucose as an entry
+                //mEntries.add(new Entry((float) days, (float) mGdDataList.get(i).getGlucose()));
+            }
         }
 
         initialiseChart();
@@ -350,11 +358,23 @@ public class DashboardActivity extends AppCompatActivity {
         xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawLabels(true);
-        xAxis.setValueFormatter(new CustomXAxisValueFormatter());
         xAxis.setAxisMinimum(0);
-        xAxis.setAxisMaximum(31 * 24);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setGranularity(5 * 24);
+        if (mPeriod == 0) {
+            xAxis.setValueFormatter(new DefaultAxisValueFormatter(1));
+            xAxis.setAxisMaximum(24);
+            xAxis.setGranularityEnabled(true);
+            xAxis.setGranularity(2);
+        } else if (mPeriod == 1) {
+            xAxis.setValueFormatter(new CustomXAxisValueFormatter());
+            xAxis.setAxisMaximum(31 * 24);
+            xAxis.setGranularityEnabled(true);
+            xAxis.setGranularity(5 * 24);
+        } else if (mPeriod == 2) {
+            xAxis.setValueFormatter(new DefaultAxisValueFormatter(1));
+            xAxis.setAxisMaximum(365);
+            xAxis.setGranularityEnabled(true);
+            xAxis.setGranularity(31);
+        }
 
         YAxis left = mChart.getAxisLeft();
         left.setDrawGridLines(false);
@@ -426,28 +446,84 @@ public class DashboardActivity extends AppCompatActivity {
         int zeroGlucCount = 0; //checks if gluc is not entered and does not include it in avg calc
         int zeroBpCount = 0; //checks if BP is not entered and does not include it in avg calc
 
-        for (int i = 0; i < mGdDataList.size(); i++) {
-            if (mGdDataList.get(i).month() - 1 == mMonthOfYear) {
-                glucose += mGdDataList.get(i).getGlucose();
-                if (mGdDataList.get(i).getGlucose() == 0)
-                    zeroGlucCount++;
+        // Day
+        if (mPeriod == 0) {
+            for (int i = 0; i < mGdDataList.size(); i++) {
+                if (mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth) {
+                    glucose += mGdDataList.get(i).getGlucose();
+                    if (mGdDataList.get(i).getGlucose() == 0)
+                        zeroGlucCount++;
 
-                carbs += mGdDataList.get(i).getCarbs();
+                    carbs += mGdDataList.get(i).getCarbs();
 
-                activityTime += mGdDataList.get(i).getActivityTime();
+                    activityTime += mGdDataList.get(i).getActivityTime();
 
-                weight += mGdDataList.get(i).getWeight();
-                if (mGdDataList.get(i).getWeight() == 0)
-                    zeroWeightCount++;
+                    weight += mGdDataList.get(i).getWeight();
+                    if (mGdDataList.get(i).getWeight() == 0)
+                        zeroWeightCount++;
 
 
-                String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
-                systolic += Double.valueOf(parts[0]);
-                diastolic += Double.valueOf(parts[1]);
-                if (Double.valueOf(parts[0]) == 0)
-                    zeroBpCount++;
+                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                    systolic += Double.valueOf(parts[0]);
+                    diastolic += Double.valueOf(parts[1]);
+                    if (Double.valueOf(parts[0]) == 0)
+                        zeroBpCount++;
 
-                count++;
+                    count++;
+                }
+            }
+        }
+
+        // month
+        if (mPeriod == 1) {
+            for (int i = 0; i < mGdDataList.size(); i++) {
+                if (mGdDataList.get(i).month() - 1 == mMonthOfYear) {
+                    glucose += mGdDataList.get(i).getGlucose();
+                    if (mGdDataList.get(i).getGlucose() == 0)
+                        zeroGlucCount++;
+
+                    carbs += mGdDataList.get(i).getCarbs();
+
+                    activityTime += mGdDataList.get(i).getActivityTime();
+
+                    weight += mGdDataList.get(i).getWeight();
+                    if (mGdDataList.get(i).getWeight() == 0)
+                        zeroWeightCount++;
+
+
+                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                    systolic += Double.valueOf(parts[0]);
+                    diastolic += Double.valueOf(parts[1]);
+                    if (Double.valueOf(parts[0]) == 0)
+                        zeroBpCount++;
+
+                    count++;
+                }
+            }
+
+            // full gestation
+            if (mPeriod == 2) {
+                for (int i = 0; i < mGdDataList.size(); i++) {
+                    glucose += mGdDataList.get(i).getGlucose();
+                    if (mGdDataList.get(i).getGlucose() == 0)
+                        zeroGlucCount++;
+
+                    carbs += mGdDataList.get(i).getCarbs();
+
+                    activityTime += mGdDataList.get(i).getActivityTime();
+
+                    weight += mGdDataList.get(i).getWeight();
+                    if (mGdDataList.get(i).getWeight() == 0)
+                        zeroWeightCount++;
+
+                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                    systolic += Double.valueOf(parts[0]);
+                    diastolic += Double.valueOf(parts[1]);
+                    if (Double.valueOf(parts[0]) == 0)
+                        zeroBpCount++;
+
+                    count++;
+                }
             }
         }
 
