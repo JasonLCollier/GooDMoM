@@ -190,7 +190,7 @@ public class DashboardActivity extends AppCompatActivity {
                     mDaySpinner.setVisibility(View.GONE);
                     mMonthSpinner.setVisibility(View.VISIBLE);
                 } else if (mPeriod == 2) {
-                    mMonthSpinner.setVisibility(View.GONE);
+                    mMonthSpinner.setVisibility(View.INVISIBLE);
                     mDaySpinner.setVisibility(View.GONE);
                 }
 
@@ -298,20 +298,58 @@ public class DashboardActivity extends AppCompatActivity {
     private void updateChart() {
         mEntries.clear();
 
+        long dueDate = 0;
+        long conceptionDate = 0;
+        long daysSinceConceptionInMillis = 0;
+        long prevDaysInMillis = 0;
+        int daysSinceConception = 0;
+        int prevDays = 0;
+        int count = 0;
+        int zeroGlucCount = 0;
+        double glucose = 0;
+
+        // get due date in millis
+        if (mUser != null)
+            dueDate = mUser.getDueDate();
+
+        // calculate conception date in millis
+        conceptionDate = dueDate - 24192000000L; // due date - 9 months (in millis)
+
         for (int i = 0; i < mGdDataList.size(); i++) {
             // day
-            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth)
+            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth) {
                 mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfDay(), (float) mGdDataList.get(i).getGlucose()));
-                // month
-            else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear)
+            }
+            // month
+            else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear) {
                 mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
-                // full gestation
+            }
+            // full gestation
             else if (mPeriod == 2) {
-                // get conceptionDate
-                // get dueDate
-                // days = mGdDataList.get(i).getDate() - conceptionDate
-                // get average of all glucose levels on 1 day and add that day and average glucose as an entry
-                //mEntries.add(new Entry((float) days, (float) mGdDataList.get(i).getGlucose()));
+                if (i > 0) {
+                    // calculate days since conception
+                    prevDaysInMillis = mGdDataList.get(i - 1).getDateTime() - conceptionDate;
+                    daysSinceConceptionInMillis = mGdDataList.get(i).getDateTime() - conceptionDate;
+                    prevDays = (int) (prevDaysInMillis / (1000 * 60 * 60 * 24));
+                    daysSinceConception = (int) (daysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
+
+                    // get average of all glucose levels on 1 day and add that day and average glucose as an entry
+                    glucose = mGdDataList.get(i).getGlucose();
+                    if (daysSinceConception == prevDays) {
+                        if (mGdDataList.get(i).getGlucose() == 0)
+                            zeroGlucCount++;
+                        count++;
+                    } else {
+                        if (count != 0)
+                            glucose = glucose / (count - zeroGlucCount);
+
+                        mEntries.add(new Entry((float) daysSinceConception, (float) glucose));
+
+                        prevDays = daysSinceConception;
+                        count = 0;
+                        glucose = 0;
+                    }
+                }
             }
         }
 
@@ -327,7 +365,10 @@ public class DashboardActivity extends AppCompatActivity {
         mDataSet.setColor(R.color.primary);
         mDataSet.setLineWidth(4);
         mDataSet.setCircleColor(R.color.primary);
-        mDataSet.setCircleRadius(4);
+        if (mPeriod == 0)
+            mDataSet.setCircleRadius(4);
+        else
+            mDataSet.setDrawCircles(false);
         mDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         mDataSet.setCubicIntensity(0.1f);
         mDataSet.setDrawFilled(true);
@@ -371,9 +412,9 @@ public class DashboardActivity extends AppCompatActivity {
             xAxis.setGranularity(5 * 24);
         } else if (mPeriod == 2) {
             xAxis.setValueFormatter(new DefaultAxisValueFormatter(1));
-            xAxis.setAxisMaximum(365);
+            xAxis.setAxisMaximum(280);
             xAxis.setGranularityEnabled(true);
-            xAxis.setGranularity(31);
+            xAxis.setGranularity(14);
         }
 
         YAxis left = mChart.getAxisLeft();
