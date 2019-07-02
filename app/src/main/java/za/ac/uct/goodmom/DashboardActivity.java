@@ -168,6 +168,7 @@ public class DashboardActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         mChartTypeSpinner.setAdapter(adapter);
 
+
         // Create an ArrayAdapter using the string array and a default spinner layout
         adapter = ArrayAdapter.createFromResource(this,
                 R.array.period_array, android.R.layout.simple_spinner_item);
@@ -300,10 +301,10 @@ public class DashboardActivity extends AppCompatActivity {
 
         long dueDate = 0;
         long conceptionDate = 0;
-        long daysSinceConceptionInMillis = 0;
-        long prevDaysInMillis = 0;
-        int daysSinceConception = 0;
-        int prevDays = 0;
+        long curDaysSinceConceptionInMillis = 0;
+        long nextDaysSinceConceptionInMillis = 0;
+        int curDaysSinceConception = 0;
+        int nextDaysSinceConception = 0;
         int count = 0;
         int zeroGlucCount = 0;
         double glucose = 0;
@@ -326,29 +327,44 @@ public class DashboardActivity extends AppCompatActivity {
             }
             // full gestation
             else if (mPeriod == 2) {
-                if (i > 0) {
+                // check all entries except last
+                if (i < mGdDataList.size() - 1) {
                     // calculate days since conception
-                    prevDaysInMillis = mGdDataList.get(i - 1).getDateTime() - conceptionDate;
-                    daysSinceConceptionInMillis = mGdDataList.get(i).getDateTime() - conceptionDate;
-                    prevDays = (int) (prevDaysInMillis / (1000 * 60 * 60 * 24));
-                    daysSinceConception = (int) (daysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
+                    nextDaysSinceConceptionInMillis = mGdDataList.get(i + 1).getDateTime() - conceptionDate;
+                    curDaysSinceConceptionInMillis = mGdDataList.get(i).getDateTime() - conceptionDate;
+                    nextDaysSinceConception = (int) (nextDaysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
+                    curDaysSinceConception = (int) (curDaysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
 
                     // get average of all glucose levels on 1 day and add that day and average glucose as an entry
-                    glucose = mGdDataList.get(i).getGlucose();
-                    if (daysSinceConception == prevDays) {
-                        if (mGdDataList.get(i).getGlucose() == 0)
-                            zeroGlucCount++;
-                        count++;
-                    } else {
-                        if (count != 0)
-                            glucose = glucose / (count - zeroGlucCount);
+                    glucose += mGdDataList.get(i).getGlucose();
+                    if (mGdDataList.get(i).getGlucose() == 0)
+                        zeroGlucCount++;
+                    count++;
+                    if (curDaysSinceConception != nextDaysSinceConception) {
+                        glucose = glucose / (count - zeroGlucCount);
 
-                        mEntries.add(new Entry((float) daysSinceConception, (float) glucose));
+                        if (count - zeroGlucCount != 0)
+                            mEntries.add(new Entry((float) curDaysSinceConception, (float) glucose));
 
-                        prevDays = daysSinceConception;
                         count = 0;
+                        zeroGlucCount = 0;
                         glucose = 0;
                     }
+                }
+                // check last entry
+                if (i == mGdDataList.size() - 1) {
+                    glucose += mGdDataList.get(i).getGlucose();
+                    if (mGdDataList.get(i).getGlucose() == 0)
+                        zeroGlucCount++;
+                    count++;
+
+                    glucose = glucose / (count - zeroGlucCount);
+
+                    mEntries.add(new Entry((float) curDaysSinceConception, (float) glucose));
+
+                    count = 0;
+                    zeroGlucCount = 0;
+                    glucose = 0;
                 }
             }
         }
@@ -358,6 +374,23 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void initialiseChart() {
+        // find max and min values for y axis
+
+        double maxGluc = 11;
+        double minGluc = 4;
+
+        if (mGdDataList.size() != 0) {
+            maxGluc = Double.MIN_VALUE;
+            minGluc = Double.MAX_VALUE;
+            for (int i = 0; i < mGdDataList.size(); i++) {
+                double curGluc = mGdDataList.get(i).getGlucose();
+                if (curGluc > maxGluc)
+                    maxGluc = curGluc;
+                if (curGluc < minGluc && curGluc != 0)
+                    minGluc = curGluc;
+            }
+        }
+
         // add entries and styling to dataset
         mDataSet = new LineDataSet(mEntries, "Glucose Data");
         mDataSet.setValueTextColor(R.color.primary_text);
@@ -421,8 +454,8 @@ public class DashboardActivity extends AppCompatActivity {
         left.setDrawGridLines(false);
         left.setDrawAxisLine(true);
         left.setDrawLabels(true);
-        left.setAxisMinimum(3);
-        left.setAxisMaximum(12);
+        left.setAxisMinimum((int) minGluc - 1);
+        left.setAxisMaximum((int) maxGluc);
         left.setGranularityEnabled(true);
         left.setGranularity(1);
 
@@ -430,8 +463,8 @@ public class DashboardActivity extends AppCompatActivity {
         right.setDrawGridLines(false);
         right.setDrawAxisLine(false);
         right.setDrawLabels(false);
-        right.setAxisMinimum(3);
-        right.setAxisMaximum(12);
+        right.setAxisMinimum((int) minGluc - 1);
+        right.setAxisMaximum((int) maxGluc);
         right.setGranularityEnabled(true);
         right.setGranularity(1);
 
@@ -541,38 +574,48 @@ public class DashboardActivity extends AppCompatActivity {
                     count++;
                 }
             }
+        }
 
-            // full gestation
-            if (mPeriod == 2) {
-                for (int i = 0; i < mGdDataList.size(); i++) {
-                    glucose += mGdDataList.get(i).getGlucose();
-                    if (mGdDataList.get(i).getGlucose() == 0)
-                        zeroGlucCount++;
+        // full gestation
+        if (mPeriod == 2) {
+            for (int i = 0; i < mGdDataList.size(); i++) {
+                glucose += mGdDataList.get(i).getGlucose();
+                if (mGdDataList.get(i).getGlucose() == 0)
+                    zeroGlucCount++;
 
-                    carbs += mGdDataList.get(i).getCarbs();
+                carbs += mGdDataList.get(i).getCarbs();
 
-                    activityTime += mGdDataList.get(i).getActivityTime();
+                activityTime += mGdDataList.get(i).getActivityTime();
 
-                    weight += mGdDataList.get(i).getWeight();
-                    if (mGdDataList.get(i).getWeight() == 0)
-                        zeroWeightCount++;
+                weight += mGdDataList.get(i).getWeight();
+                if (mGdDataList.get(i).getWeight() == 0)
+                    zeroWeightCount++;
 
-                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
-                    systolic += Double.valueOf(parts[0]);
-                    diastolic += Double.valueOf(parts[1]);
-                    if (Double.valueOf(parts[0]) == 0)
-                        zeroBpCount++;
+                String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                systolic += Double.valueOf(parts[0]);
+                diastolic += Double.valueOf(parts[1]);
+                if (Double.valueOf(parts[0]) == 0)
+                    zeroBpCount++;
 
-                    count++;
-                }
+                count++;
             }
         }
 
         if (count != 0) {
             glucose = glucose / (count - zeroGlucCount);
+            if (count - zeroGlucCount == 0)
+                glucose = 0;
+
             weight = weight / (count - zeroWeightCount);
+            if (count - zeroWeightCount == 0)
+                weight = 0;
+
             systolic = systolic / (count - zeroBpCount);
             diastolic = diastolic / (count - zeroBpCount);
+            if (count - zeroBpCount == 0) {
+                systolic = 0;
+                diastolic = 0;
+            }
         }
 
         glucoseStr = df.format(glucose) + "\nmmol/L";
