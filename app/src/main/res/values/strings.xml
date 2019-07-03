@@ -239,9 +239,10 @@
 
     <string-array name="chart_type_array">
         <item>Glucose</item>
-        <item>Calories</item>
+        <item>Carbs</item>
         <item>Activity</item>
         <item>Weight</item>
+        <item>Blood Pressure</item>
     </string-array>
 
     <string-array name="locations_array">

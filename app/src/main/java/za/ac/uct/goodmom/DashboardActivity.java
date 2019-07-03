@@ -95,15 +95,16 @@ public class DashboardActivity extends AppCompatActivity {
     private EventAdapter mDataAdapter;
 
     private User mUser;
+    private HpSpecifiedRanges mRanges;
 
     private String mUsername, mUserId;
-    private int mYear, mMonth, mDay, mMonthOfYear, mDayOfMonth, mPeriod;
+    private int mYear, mMonth, mDay, mMonthOfYear, mDayOfMonth, mPeriod, mChartType;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mGdDataDatabaseReference, mUsersDatabaseReference;
+    private DatabaseReference mGdDataDatabaseReference, mUsersDatabaseReference, mRangesDatabaseReference;
     private ChildEventListener mChildEventListener;
-    private ValueEventListener mValueEventListener, mValueEventListenerForDD;
+    private ValueEventListener mValueEventListener, mValueEventListenerForDD, mValueEventListenerForRanges;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -125,6 +126,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
         mGdDataDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("gdData");
         mUsersDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("userData");
+        mRangesDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("userData").child("ranges");
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);
@@ -153,6 +155,7 @@ public class DashboardActivity extends AppCompatActivity {
         mDay = c.get(Calendar.DAY_OF_MONTH); // current day
 
         // Initialise spinner default values
+        mChartType = 0; // 0 = glucose; 1 = carbs; 2 = activity; 3 = weight; 4 = BP
         mPeriod = 1; // 0 = day; 1 = month; 2 = gestation
         mDayOfMonth = mDay;
         mMonthOfYear = mMonth;
@@ -168,6 +171,18 @@ public class DashboardActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         mChartTypeSpinner.setAdapter(adapter);
 
+        mChartTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mChartType = position;
+                updateChart();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mChartType = 0;
+            }
+        });
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         adapter = ArrayAdapter.createFromResource(this,
@@ -299,6 +314,10 @@ public class DashboardActivity extends AppCompatActivity {
     private void updateChart() {
         mEntries.clear();
 
+        // chart type
+        float yVal = 0;
+
+        // Initialisation of variables to set up full gestation graph
         long dueDate = 0;
         long conceptionDate = 0;
         long curDaysSinceConceptionInMillis = 0;
@@ -306,24 +325,41 @@ public class DashboardActivity extends AppCompatActivity {
         int curDaysSinceConception = 0;
         int nextDaysSinceConception = 0;
         int count = 0;
-        int zeroGlucCount = 0;
-        double glucose = 0;
-
+        int zeroCount = 0;
+        float avgYVal = 0;
         // get due date in millis
         if (mUser != null)
             dueDate = mUser.getDueDate();
-
         // calculate conception date in millis
         conceptionDate = dueDate - 24192000000L; // due date - 9 months (in millis)
 
         for (int i = 0; i < mGdDataList.size(); i++) {
-            // day
-            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth) {
-                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfDay(), (float) mGdDataList.get(i).getGlucose()));
+            switch (mChartType) {
+                case 0:
+                    yVal = (float) mGdDataList.get(i).getGlucose();
+                    break;
+                case 1:
+                    yVal = (float) mGdDataList.get(i).getCarbs();
+                    break;
+                case 2:
+                    yVal = (float) mGdDataList.get(i).getActivityTime();
+                    break;
+                case 3:
+                    yVal = (float) mGdDataList.get(i).getWeight();
+                    break;
+                case 4:
+                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                    yVal = Float.valueOf(parts[0]);
+                    break;
             }
-            // month
-            else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear) {
-                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), (float) mGdDataList.get(i).getGlucose()));
+
+            // period = day (and check for no zero values)
+            if (mPeriod == 0 && mGdDataList.get(i).month() - 1 == mMonthOfYear && mGdDataList.get(i).day() == mDayOfMonth && yVal != 0) {
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfDay(), yVal));
+            }
+            // period = month (and check for no zero values)
+            else if (mPeriod == 1 && mGdDataList.get(i).month() - 1 == mMonthOfYear && yVal != 0) {
+                mEntries.add(new Entry((float) mGdDataList.get(i).hoursOfMonth(), yVal));
             }
             // full gestation
             else if (mPeriod == 2) {
@@ -336,35 +372,36 @@ public class DashboardActivity extends AppCompatActivity {
                     curDaysSinceConception = (int) (curDaysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
 
                     // get average of all glucose levels on 1 day and add that day and average glucose as an entry
-                    glucose += mGdDataList.get(i).getGlucose();
-                    if (mGdDataList.get(i).getGlucose() == 0)
-                        zeroGlucCount++;
+                    avgYVal += yVal;
+                    if (yVal == 0)
+                        zeroCount++;
                     count++;
                     if (curDaysSinceConception != nextDaysSinceConception) {
-                        glucose = glucose / (count - zeroGlucCount);
+                        avgYVal = avgYVal / (count - zeroCount);
 
-                        if (count - zeroGlucCount != 0)
-                            mEntries.add(new Entry((float) curDaysSinceConception, (float) glucose));
+                        if (count - zeroCount != 0 && avgYVal != 0)
+                            mEntries.add(new Entry((float) curDaysSinceConception, avgYVal));
 
                         count = 0;
-                        zeroGlucCount = 0;
-                        glucose = 0;
+                        zeroCount = 0;
+                        avgYVal = 0;
                     }
                 }
                 // check last entry
                 if (i == mGdDataList.size() - 1) {
-                    glucose += mGdDataList.get(i).getGlucose();
-                    if (mGdDataList.get(i).getGlucose() == 0)
-                        zeroGlucCount++;
+                    avgYVal += yVal;
+                    if (yVal == 0)
+                        zeroCount++;
                     count++;
 
-                    glucose = glucose / (count - zeroGlucCount);
+                    avgYVal = avgYVal / (count - zeroCount);
 
-                    mEntries.add(new Entry((float) curDaysSinceConception, (float) glucose));
+                    if (count - zeroCount != 0 && avgYVal != 0)
+                        mEntries.add(new Entry((float) curDaysSinceConception, avgYVal));
 
                     count = 0;
-                    zeroGlucCount = 0;
-                    glucose = 0;
+                    zeroCount = 0;
+                    avgYVal = 0;
                 }
             }
         }
@@ -375,40 +412,53 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void initialiseChart() {
         // find max and min values for y axis
-
-        double maxGluc = 11;
-        double minGluc = 4;
+        double maxY = 11;
+        double minY = 4;
+        double yVal = 0;
 
         if (mGdDataList.size() != 0) {
-            maxGluc = Double.MIN_VALUE;
-            minGluc = Double.MAX_VALUE;
+            maxY = Double.MIN_VALUE;
+            minY = Double.MAX_VALUE;
             for (int i = 0; i < mGdDataList.size(); i++) {
-                double curGluc = mGdDataList.get(i).getGlucose();
-                if (curGluc > maxGluc)
-                    maxGluc = curGluc;
-                if (curGluc < minGluc && curGluc != 0)
-                    minGluc = curGluc;
+                switch (mChartType) {
+                    case 0:
+                        yVal = mGdDataList.get(i).getGlucose();
+                        break;
+                    case 1:
+                        yVal = (double) mGdDataList.get(i).getCarbs();
+                        break;
+                    case 2:
+                        yVal = mGdDataList.get(i).getActivityTime();
+                        break;
+                    case 3:
+                        yVal = mGdDataList.get(i).getWeight();
+                        break;
+                    case 4:
+                        String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                        yVal = Float.valueOf(parts[0]);
+                        break;
+                }
+                if (yVal > maxY)
+                    maxY = yVal;
+                if (yVal < minY && yVal >= 1)
+                    minY = yVal;
             }
         }
 
         // add entries and styling to dataset
-        mDataSet = new LineDataSet(mEntries, "Glucose Data");
+        mDataSet = new LineDataSet(mEntries, "Data");
         mDataSet.setValueTextColor(R.color.primary_text);
         mDataSet.setValueTextSize(16);
         mDataSet.setColor(R.color.primary);
         mDataSet.setLineWidth(4);
         mDataSet.setCircleColor(R.color.primary);
-        if (mPeriod == 0)
-            mDataSet.setCircleRadius(4);
-        else
-            mDataSet.setDrawCircles(false);
+        mDataSet.setCircleRadius(2);
         mDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         mDataSet.setCubicIntensity(0.1f);
         mDataSet.setDrawFilled(true);
         mDataSet.setFillColor(R.color.primary_light);
         mDataSet.setDrawValues(false);
 
-        // add dataset to linedata object to be displayed on chart
         mLineData = new LineData(mDataSet);
         mLineData.setValueFormatter(new CustomValueFormatter());
         mChart.setData(mLineData);
@@ -454,8 +504,8 @@ public class DashboardActivity extends AppCompatActivity {
         left.setDrawGridLines(false);
         left.setDrawAxisLine(true);
         left.setDrawLabels(true);
-        left.setAxisMinimum((int) minGluc - 1);
-        left.setAxisMaximum((int) maxGluc);
+        left.setAxisMinimum((int) minY - 1);
+        left.setAxisMaximum((int) maxY + 1);
         left.setGranularityEnabled(true);
         left.setGranularity(1);
 
@@ -463,8 +513,8 @@ public class DashboardActivity extends AppCompatActivity {
         right.setDrawGridLines(false);
         right.setDrawAxisLine(false);
         right.setDrawLabels(false);
-        right.setAxisMinimum((int) minGluc - 1);
-        right.setAxisMaximum((int) maxGluc);
+        right.setAxisMinimum((int) minY - 1);
+        right.setAxisMaximum((int) maxY + 1);
         right.setGranularityEnabled(true);
         right.setGranularity(1);
 
@@ -715,7 +765,6 @@ public class DashboardActivity extends AppCompatActivity {
                     GdData data = dataSnapshot.getValue(GdData.class);
                     mGdDataList.add(data);
                     Collections.sort(mGdDataList);
-                    //mDataAdapter.notifyDataSetChanged();
 
                     // add data to entries list if it is from the selected month
                     if (data.month() - 1 == mMonthOfYear)
@@ -736,6 +785,39 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             };
             mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
+
+            if (mValueEventListenerForRanges == null) {
+                mValueEventListenerForRanges = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mRanges = dataSnapshot.getValue(HpSpecifiedRanges.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mRangesDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForRanges);
+
+            if (mValueEventListenerForDD == null) {
+                mValueEventListenerForDD = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mUser = dataSnapshot.getValue(User.class);
+
+                        // Initialise progress bar
+                        initialiseProgressBar();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
 
             if (mValueEventListener == null) {
                 mValueEventListener = new ValueEventListener() {
@@ -760,24 +842,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
             mGdDataDatabaseReference.addValueEventListener(mValueEventListener);
 
-            if (mValueEventListenerForDD == null) {
-                mValueEventListenerForDD = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        mUser = dataSnapshot.getValue(User.class);
-
-                        // Initialise progress bar
-                        initialiseProgressBar();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-            }
-            mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
-
         }
     }
 
@@ -793,6 +857,10 @@ public class DashboardActivity extends AppCompatActivity {
         if (mValueEventListenerForDD != null) {
             mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
             mValueEventListenerForDD = null;
+        }
+        if (mValueEventListenerForRanges != null) {
+            mRangesDatabaseReference.removeEventListener(mValueEventListenerForRanges);
+            mValueEventListenerForRanges = null;
         }
     }
 
