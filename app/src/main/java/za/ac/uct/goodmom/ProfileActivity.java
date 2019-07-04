@@ -286,17 +286,17 @@ public class ProfileActivity extends AppCompatActivity {
     private void updateRangesDisplay(HpSpecifiedRanges ranges) {
         String noDataMessage = "Your HP has not set goals";
 
-        if (ranges.getGlucMin() == null | ranges.getGlucMax() == null)
+        if (ranges == null || ranges.getGlucMin() == null || ranges.getGlucMax() == null)
             mGlucoseRangeText.setText(noDataMessage);
         else
             mGlucoseRangeText.setText(ranges.getGlucMin() + " - " + ranges.getGlucMax() + " mmol/L");
 
-        if (ranges.getWeightMin() == null | ranges.getWeightMax() == null)
+        if (ranges == null || ranges.getWeightMin() == null || ranges.getWeightMax() == null)
             mWeightRangeText.setText(noDataMessage);
         else
             mWeightRangeText.setText(ranges.getWeightMin() + " - " + ranges.getWeightMax() + " Kg");
 
-        if (ranges.getActMin() == null | ranges.getActMax() == null)
+        if (ranges == null || ranges.getActMin() == null || ranges.getActMax() == null)
             mActivityGoalText.setText(noDataMessage);
         else
             mActivityGoalText.setText(ranges.getActMin() + " - " + ranges.getActMax() + " min / week");

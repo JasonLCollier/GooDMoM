@@ -155,6 +155,7 @@
     <string name="blood_pressure_unit">mmHg</string>
     <string name="symptoms">Symptoms</string>
     <string name="select_symptoms">Select symptoms</string>
+    <string name="data">Data</string>
 
     <string-array name="glucose_time_array">
         <item>Before meal</item>

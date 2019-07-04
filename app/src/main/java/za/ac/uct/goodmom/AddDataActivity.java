@@ -124,6 +124,8 @@ public class AddDataActivity extends AppCompatActivity {
         mSystolicText.setText(mSystolicStr);
         mDiastolicStr = "0";
         mDiastolicText.setText(mDiastolicStr);
+        // Initialise symptoms
+        mSymptomsStr = "";
 
         // On click listener for glucose value
         mGlucoseContainer.setOnClickListener(new View.OnClickListener() {

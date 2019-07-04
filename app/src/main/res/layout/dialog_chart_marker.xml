@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/data_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:text="@string/data"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@color/accent"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/glucose_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="5 mmol/L" />
+
+        <TextView
+            android:id="@+id/carbs_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="45 g" />
+
+        <TextView
+            android:id="@+id/act_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/activity"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="0.5 hrs" />
+
+        <TextView
+            android:id="@+id/weight_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="65 Kg" />
+
+        <TextView
+            android:id="@+id/bp_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="120/80 mmHg" />
+
+        <TextView
+            android:id="@+id/symptoms_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:text="@string/symptoms"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@color/accent"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/symptoms_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            tools:text="Severe thirst" />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package za.ac.uct.goodmom;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
@@ -85,6 +88,7 @@ public class DashboardActivity extends AppCompatActivity {
     private Spinner mChartTypeSpinner, mPeriodSpinner, mMonthSpinner, mDaySpinner;
     private ProgressBar mProgressBar;
     private TextView mDueDateText, mGlucoseText, mCarbText, mActivityTimeText, mWeightText, mBPText;
+    private Dialog mDialog;
 
     private LineDataSet mDataSet;
     private LineData mLineData;
@@ -411,11 +415,18 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void initialiseChart() {
+        // Prepare colors
+        int primaryColor = getResources().getColor(R.color.primary);
+        int primaryLightColor = getResources().getColor(R.color.primary_light);
+        int primaryTextColor = getResources().getColor(R.color.primary_text);
+        int greenColor = getResources().getColor(android.R.color.holo_green_dark);
+        int redColor = getResources().getColor(android.R.color.holo_red_dark);
+        int blueColor = getResources().getColor(android.R.color.holo_blue_dark);
+
         // find max and min values for y axis
         double maxY = 11;
         double minY = 4;
         double yVal = 0;
-
         if (mGdDataList.size() != 0) {
             maxY = Double.MIN_VALUE;
             minY = Double.MAX_VALUE;
@@ -445,18 +456,71 @@ public class DashboardActivity extends AppCompatActivity {
             }
         }
 
+        //Determine entry colours based on goals
+        int[] circleColours = {primaryColor}; // manual color entry
+        double goalMax = 0; // initialise upper glucose goal
+        double goalMin = 0; // initialise lower glucose goal
+        boolean rangesDefined = false;
+        switch (mChartType) {
+            case 0:
+                if (mRanges != null && mRanges.getGlucMax() != null && mRanges.getGlucMin() != null) {
+                    goalMax = Double.valueOf(mRanges.getGlucMax());
+                    goalMin = Double.valueOf(mRanges.getGlucMin());
+                    rangesDefined = true;
+                }
+                break;
+            case 1:
+                if (mRanges != null && mRanges.getCarbsMax() != null && mRanges.getCarbsMin() != null) {
+                    goalMax = Double.valueOf(mRanges.getCarbsMax());
+                    goalMin = Double.valueOf(mRanges.getCarbsMin());
+                    rangesDefined = true;
+                }
+                break;
+            case 2:
+                if (mRanges != null && mRanges.getActMax() != null && mRanges.getActMin() != null) {
+                    goalMax = Double.valueOf(mRanges.getActMax());
+                    goalMin = Double.valueOf(mRanges.getActMin());
+                    rangesDefined = true;
+                }
+                break;
+            case 3:
+                if (mRanges != null && mRanges.getWeightMax() != null && mRanges.getWeightMin() != null) {
+                    goalMax = Double.valueOf(mRanges.getWeightMax());
+                    goalMin = Double.valueOf(mRanges.getWeightMin());
+                    rangesDefined = true;
+                }
+                break;
+            case 4:
+                if (mRanges != null && mRanges.getSystolicMax() != null && mRanges.getSystolicMin() != null) {
+                    goalMax = Double.valueOf(mRanges.getSystolicMax());
+                    goalMin = Double.valueOf(mRanges.getSystolicMin());
+                    rangesDefined = true;
+                }
+                break;
+        }
+        if (rangesDefined && mEntries.size() != 0) {
+            circleColours = new int[mEntries.size()];
+            for (int i = 0; i < mEntries.size(); i++) {
+                if (mEntries.get(i).getY() > goalMax)
+                    circleColours[i] = redColor;
+                else if (mEntries.get(i).getY() < goalMin)
+                    circleColours[i] = blueColor;
+                else
+                    circleColours[i] = greenColor;
+            }
+        }
+
         // add entries and styling to dataset
         mDataSet = new LineDataSet(mEntries, "Data");
-        mDataSet.setValueTextColor(R.color.primary_text);
-        mDataSet.setValueTextSize(16);
-        mDataSet.setColor(R.color.primary);
-        mDataSet.setLineWidth(4);
-        mDataSet.setCircleColor(R.color.primary);
-        mDataSet.setCircleRadius(2);
+        mDataSet.setColor(primaryLightColor);
+        mDataSet.setLineWidth(2);
+        mDataSet.setCircleColors(circleColours);
+        mDataSet.setCircleRadius(4);
+        mDataSet.setDrawCircleHole(false);
         mDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         mDataSet.setCubicIntensity(0.1f);
         mDataSet.setDrawFilled(true);
-        mDataSet.setFillColor(R.color.primary_light);
+        mDataSet.setFillColor(primaryLightColor);
         mDataSet.setDrawValues(false);
 
         mLineData = new LineData(mDataSet);
@@ -466,14 +530,11 @@ public class DashboardActivity extends AppCompatActivity {
 
         // no data text
         mChart.setNoDataText("No data available - add a new entry");
-        mChart.setNoDataTextColor(R.color.primary);
+        mChart.setNoDataTextColor(primaryTextColor);
 
         // description formatting
         Description description = new Description();
         description.setText(""); // Remove description
-        description.setTextSize(16);
-        description.setTextColor(R.color.primary);
-        description.setPosition(150, 45);
         mChart.setDescription(description);
 
         // axis formatting
@@ -522,6 +583,82 @@ public class DashboardActivity extends AppCompatActivity {
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
 
+        // chart interaction
+        mDataSet.setDrawHighlightIndicators(true);
+        mDataSet.setHighLightColor(primaryColor);
+        mChart.setPinchZoom(true);
+        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                displayDialog(e.getX(), e.getY());
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+    }
+
+    private void displayDialog(double selectedX, double selectedY) {
+        for (int i = 0; i < mGdDataList.size(); i++) {
+            // get current y value
+            double curY = 0;
+            switch (mChartType) {
+                case 0:
+                    curY = mGdDataList.get(i).getGlucose();
+                    break;
+                case 1:
+                    curY = (double) mGdDataList.get(i).getCarbs();
+                    break;
+                case 2:
+                    curY = mGdDataList.get(i).getActivityTime();
+                    break;
+                case 3:
+                    curY = mGdDataList.get(i).getWeight();
+                    break;
+                case 4:
+                    String[] parts = mGdDataList.get(i).getBloodPressure().split("/");
+                    curY = Float.valueOf(parts[0]);
+                    break;
+            }
+
+            // get current x value
+            double curX = 0;
+            if (mPeriod == 0)
+                curX = mGdDataList.get(i).hoursOfDay();
+            else if (mPeriod == 1)
+                curX = mGdDataList.get(i).hoursOfMonth();
+
+            //check for equivalence
+            if (curX == selectedX && (Math.abs(curY - selectedY) < 0.001)) {
+                mDialog = new Dialog(DashboardActivity.this);
+                mDialog.setContentView(R.layout.dialog_chart_marker);
+
+                TextView glucText = mDialog.findViewById(R.id.glucose_val);
+                TextView carbsText = mDialog.findViewById(R.id.carbs_val);
+                TextView actText = mDialog.findViewById(R.id.act_val);
+                TextView weightText = mDialog.findViewById(R.id.weight_val);
+                TextView bpText = mDialog.findViewById(R.id.bp_val);
+                TextView symptomsText = mDialog.findViewById(R.id.symptoms_val);
+
+                glucText.setText(mGdDataList.get(i).getGlucose() + " mmol/L");
+                carbsText.setText(mGdDataList.get(i).getCarbs() + " g");
+                actText.setText(mGdDataList.get(i).getActivityTime() + " hrs");
+                weightText.setText(mGdDataList.get(i).getWeight() + " Kg");
+                bpText.setText(mGdDataList.get(i).getBloodPressure() + " mmHg");
+
+                String[] parts = mGdDataList.get(i).getSymptoms().split(",");
+                String symptoms = " ";
+                for (int j = 0; j < parts.length - 1; j++) {
+                    symptoms += parts[j] + ",\n";
+                }
+                symptomsText.setText(symptoms);
+
+                mDialog.show();
+
+            }
+        }
     }
 
     private void initialiseProgressBar() {
@@ -791,6 +928,16 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         mRanges = dataSnapshot.getValue(HpSpecifiedRanges.class);
+
+                        // Value events are always triggered last
+                        // and are guaranteed to contain updates from any other events
+                        // which occurred before that snapshot was taken
+
+                        // Initialise chart
+                        initialiseChart();
+
+                        // Initialise display text
+                        initialiseDisplayText();
                     }
 
                     @Override
@@ -819,29 +966,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
             mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
 
-            if (mValueEventListener == null) {
-                mValueEventListener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        // Value events are always triggered last
-                        // and are guaranteed to contain updates from any other events
-                        // which occurred before that snapshot was taken
-
-                        // Initialise chart
-                        initialiseChart();
-
-                        // Initialise display text
-                        initialiseDisplayText();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-            }
-            mGdDataDatabaseReference.addValueEventListener(mValueEventListener);
-
         }
     }
 
@@ -849,10 +973,6 @@ public class DashboardActivity extends AppCompatActivity {
         if (mChildEventListener != null) {
             mGdDataDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
-        }
-        if (mValueEventListener != null) {
-            mGdDataDatabaseReference.removeEventListener(mValueEventListener);
-            mValueEventListener = null;
         }
         if (mValueEventListenerForDD != null) {
             mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
