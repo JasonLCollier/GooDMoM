@@ -1,5 +1,8 @@
 package za.ac.uct.goodmom;
 
+import android.app.AlarmManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -61,6 +64,8 @@ public class RemindersActivity extends AppCompatActivity {
     private RecyclerView mEventRecyclerView;
     private EventAdapter mEventAdapter;
 
+    private AlarmManager mAlarmManager;
+
     private String mUsername, mUserId;
 
     // Firebase instance variables
@@ -84,6 +89,7 @@ public class RemindersActivity extends AppCompatActivity {
 
         // initialise variables
         mEventList = new ArrayList<>();
+        mAlarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
 
         // Assign variables to views
         mFab = findViewById(R.id.fab);
@@ -205,6 +211,13 @@ public class RemindersActivity extends AppCompatActivity {
         if (mChildEventListener != null) {
             mEventsDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
+        }
+    }
+
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Alarm Triggered", Toast.LENGTH_SHORT).show();
         }
     }
 

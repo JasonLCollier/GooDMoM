@@ -1,15 +1,9 @@
 package za.ac.uct.goodmom;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -215,6 +209,7 @@ public class MessengerActivity extends AppCompatActivity {
         mUsername = ANONYMOUS;
         mMessagetList.clear();
         detachDatabaseReadListener();
+        stopService(new Intent(this, NotificationService.class));
     }
 
     private void attachDatabaseReadListener() {
@@ -228,9 +223,6 @@ public class MessengerActivity extends AppCompatActivity {
                     mMessageRecyclerView.smoothScrollToPosition(mMessagetList.size() - 1);
 
                     mMessageAdapter.notifyDataSetChanged();
-
-                    //if (mNewMessageNotifications)
-                    //addNotification();
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -274,37 +266,9 @@ public class MessengerActivity extends AppCompatActivity {
             mMessagesDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
-    }
-
-    private void addNotification() {
-        Intent notificationIntent = new Intent(this, MessengerActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setContentTitle("GooDMoM")
-                        .setContentText("New Message")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .setContentIntent(contentIntent)
-                        .setAutoCancel(true);
-
-        // Add as notification
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, builder.build());
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Messenger", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("New Message Notification");
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+        if (mChildEventListener != null) {
+            mMessagesDatabaseReference.removeEventListener(mValueEventListener);
+            mValueEventListener = null;
         }
     }
 

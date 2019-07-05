@@ -286,6 +286,8 @@ public class DashboardActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // za.ac.uct.goodmom.User is signed in
+                    // start notification service
+                    startService(new Intent(DashboardActivity.this, NotificationService.class));
 
                 } else {
                     // za.ac.uct.goodmom.User is signed out
@@ -313,6 +315,171 @@ public class DashboardActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent profileIntent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                startActivity(profileIntent);
+                return true;
+            case R.id.signout_menu:
+                AuthUI.getInstance().signOut(this);
+                Intent logoutIntent = new Intent(DashboardActivity.this, LandingActivity.class);
+                startActivity(logoutIntent);
+                return true;
+            case R.id.settings_menu:
+                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.help_menu:
+                Intent helpIntent = new Intent(DashboardActivity.this, HelpActivity.class);
+                startActivity(helpIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                // Sign-in succeeded - check whether the user is a first time or returning user
+                FirebaseUserMetadata metadata = mFirebaseAuth.getCurrentUser().getMetadata();
+                if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
+                    // The user is new, take them to the sign up activity for additional info
+                    Intent signUpIntent = new Intent(DashboardActivity.this, PersonalInfoActivity.class);
+                    startActivity(signUpIntent);
+                } else {
+                    // This is an existing user, show them the dashboard.
+                    Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+                }
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // Sign in was canceled by the user, finish the activity
+                Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
+
+                Intent landingIntent = new Intent(DashboardActivity.this, LandingActivity.class);
+                startActivity(landingIntent);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+        mGdDataList.clear();
+        detachDatabaseReadListener();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        attachDatabaseReadListener();
+    }
+
+    private void attachDatabaseReadListener() {
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    GdData data = dataSnapshot.getValue(GdData.class);
+                    mGdDataList.add(data);
+                    Collections.sort(mGdDataList);
+
+                    // add data to entries list if it is from the selected month
+                    if (data.month() - 1 == mMonthOfYear)
+                        mEntries.add(new Entry((float) data.hoursOfMonth(), (float) data.getGlucose()));
+
+                }
+
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
+
+            if (mValueEventListenerForRanges == null) {
+                mValueEventListenerForRanges = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mRanges = dataSnapshot.getValue(HpSpecifiedRanges.class);
+
+                        // Value events are always triggered last
+                        // and are guaranteed to contain updates from any other events
+                        // which occurred before that snapshot was taken
+
+                        // Initialise chart
+                        initialiseChart();
+
+                        // Initialise display text
+                        initialiseDisplayText();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mRangesDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForRanges);
+
+            if (mValueEventListenerForDD == null) {
+                mValueEventListenerForDD = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mUser = dataSnapshot.getValue(User.class);
+
+                        // Initialise progress bar
+                        initialiseProgressBar();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
+
+        }
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mChildEventListener != null) {
+            mGdDataDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+        if (mValueEventListenerForDD != null) {
+            mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
+            mValueEventListenerForDD = null;
+        }
+        if (mValueEventListenerForRanges != null) {
+            mRangesDatabaseReference.removeEventListener(mValueEventListenerForRanges);
+            mValueEventListenerForRanges = null;
+        }
     }
 
     private void updateChart() {
@@ -375,13 +542,14 @@ public class DashboardActivity extends AppCompatActivity {
                     nextDaysSinceConception = (int) (nextDaysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
                     curDaysSinceConception = (int) (curDaysSinceConceptionInMillis / (1000 * 60 * 60 * 24));
 
-                    // get average of all glucose levels on 1 day and add that day and average glucose as an entry
+                    // get total / average of all  levels on 1 day and add that day and average glucose as an entry
                     avgYVal += yVal;
                     if (yVal == 0)
                         zeroCount++;
                     count++;
                     if (curDaysSinceConception != nextDaysSinceConception) {
-                        avgYVal = avgYVal / (count - zeroCount);
+                        if (mChartType != 1 || mChartType != 2) // do not get average for carbs and exercise
+                            avgYVal = avgYVal / (count - zeroCount);
 
                         if (count - zeroCount != 0 && avgYVal != 0)
                             mEntries.add(new Entry((float) curDaysSinceConception, avgYVal));
@@ -398,7 +566,8 @@ public class DashboardActivity extends AppCompatActivity {
                         zeroCount++;
                     count++;
 
-                    avgYVal = avgYVal / (count - zeroCount);
+                    if (mChartType != 1 || mChartType != 2)
+                        avgYVal = avgYVal / (count - zeroCount);
 
                     if (count - zeroCount != 0 && avgYVal != 0)
                         mEntries.add(new Entry((float) curDaysSinceConception, avgYVal));
@@ -817,171 +986,6 @@ public class DashboardActivity extends AppCompatActivity {
         mWeightText.setText(weightStr);
         mBPText.setText(bpStr);
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.profile_menu:
-                Intent profileIntent = new Intent(DashboardActivity.this, ProfileActivity.class);
-                startActivity(profileIntent);
-                return true;
-            case R.id.signout_menu:
-                AuthUI.getInstance().signOut(this);
-                Intent logoutIntent = new Intent(DashboardActivity.this, LandingActivity.class);
-                startActivity(logoutIntent);
-                return true;
-            case R.id.settings_menu:
-                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.help_menu:
-                Intent helpIntent = new Intent(DashboardActivity.this, HelpActivity.class);
-                startActivity(helpIntent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                // Sign-in succeeded - check whether the user is a first time or returning user
-                FirebaseUserMetadata metadata = mFirebaseAuth.getCurrentUser().getMetadata();
-                if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
-                    // The user is new, take them to the sign up activity for additional info
-                    Intent signUpIntent = new Intent(DashboardActivity.this, PersonalInfoActivity.class);
-                    startActivity(signUpIntent);
-                } else {
-                    // This is an existing user, show them the dashboard.
-                    Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-                }
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // Sign in was canceled by the user, finish the activity
-                Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
-
-                Intent landingIntent = new Intent(DashboardActivity.this, LandingActivity.class);
-                startActivity(landingIntent);
-            }
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mAuthStateListener != null) {
-            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
-        mGdDataList.clear();
-        detachDatabaseReadListener();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        attachDatabaseReadListener();
-    }
-
-    private void attachDatabaseReadListener() {
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    GdData data = dataSnapshot.getValue(GdData.class);
-                    mGdDataList.add(data);
-                    Collections.sort(mGdDataList);
-
-                    // add data to entries list if it is from the selected month
-                    if (data.month() - 1 == mMonthOfYear)
-                        mEntries.add(new Entry((float) data.hoursOfMonth(), (float) data.getGlucose()));
-
-                }
-
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
-
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                }
-
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
-
-            if (mValueEventListenerForRanges == null) {
-                mValueEventListenerForRanges = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        mRanges = dataSnapshot.getValue(HpSpecifiedRanges.class);
-
-                        // Value events are always triggered last
-                        // and are guaranteed to contain updates from any other events
-                        // which occurred before that snapshot was taken
-
-                        // Initialise chart
-                        initialiseChart();
-
-                        // Initialise display text
-                        initialiseDisplayText();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-            }
-            mRangesDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForRanges);
-
-            if (mValueEventListenerForDD == null) {
-                mValueEventListenerForDD = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        mUser = dataSnapshot.getValue(User.class);
-
-                        // Initialise progress bar
-                        initialiseProgressBar();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-            }
-            mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForDD);
-
-        }
-    }
-
-    private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mGdDataDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
-        }
-        if (mValueEventListenerForDD != null) {
-            mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
-            mValueEventListenerForDD = null;
-        }
-        if (mValueEventListenerForRanges != null) {
-            mRangesDatabaseReference.removeEventListener(mValueEventListenerForRanges);
-            mValueEventListenerForRanges = null;
-        }
     }
 
 }
