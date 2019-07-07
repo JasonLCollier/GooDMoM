@@ -24,7 +24,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="notifications_message"
-            android:title="@string/pref_title_message_notifications" />
+            android:title="@string/pref_title_notifications" />
 
         <!-- Allows the user to choose a ringtone in the 'notification' category. -->
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->

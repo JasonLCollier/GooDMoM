@@ -1,8 +1,11 @@
 package za.ac.uct.goodmom;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +32,7 @@ import java.util.Date;
 
 public class AddEventActivity extends AppCompatActivity {
 
+    public static final int REQUEST_CODE = 1;
 
     // Tag for the log messages
     public static final String LOG_TAG = AddEventActivity.class.getSimpleName();
@@ -91,8 +95,8 @@ public class AddEventActivity extends AppCompatActivity {
         // Update date and time views
         mStartDateStr = mDay + "/" + (mMonth + 1) + "/" + mYear;
         mEndDateStr = mStartDateStr;
-        mStartTimeStr = createTimeString(mHour, 0);
-        mEndTimeStr = createTimeString(mHour + 1, 0);
+        mStartTimeStr = createTimeString(mHour + 1, 0);
+        mEndTimeStr = createTimeString(mHour + 2, 0);
         mStartDateText.setText(formatDisplayDate(mStartDateStr));
         mEndDateText.setText(formatDisplayDate(mEndDateStr));
         mStartTimeText.setText(mStartTimeStr);
@@ -118,11 +122,33 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mEventType = position; // 0 = appointment; 1 = medication; 2 = glucose reading
+
+                if (mEventType == 0) {
+                    mEndDateText.setVisibility(View.VISIBLE);
+                    mEndTimeText.setVisibility(View.VISIBLE);
+                    mStartDateText.setVisibility(View.VISIBLE);
+                    mStartTimeText.setVisibility(View.VISIBLE);
+                } else if (mEventType == 1) {
+                    mEndDateText.setVisibility(View.GONE);
+                    mEndTimeText.setVisibility(View.GONE);
+                    mStartDateText.setVisibility(View.VISIBLE);
+                    mStartTimeText.setVisibility(View.VISIBLE);
+                } else if (mEventType == 2) {
+                    mEndDateText.setVisibility(View.GONE);
+                    mEndTimeText.setVisibility(View.GONE);
+                    mStartDateText.setVisibility(View.VISIBLE);
+                    mStartTimeText.setVisibility(View.VISIBLE);
+                }
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 mEventType = 0;
+                mEndDateText.setVisibility(View.VISIBLE);
+                mEndTimeText.setVisibility(View.VISIBLE);
+                mStartDateText.setVisibility(View.VISIBLE);
+                mStartTimeText.setVisibility(View.VISIBLE);
             }
         });
 
@@ -197,7 +223,7 @@ public class AddEventActivity extends AppCompatActivity {
                                 mStartTimeStr = createTimeString(selectedHour, selectedMinute);
                                 mStartTimeText.setText(mStartTimeStr);
                             }
-                        }, mHour, mMinute, true);// Yes 24 hour time
+                        }, mHour + 1, 0, true);// Yes 24 hour time
                 mTimePickerDialog.show();
 
             }
@@ -218,7 +244,7 @@ public class AddEventActivity extends AppCompatActivity {
                                 mEndTimeStr = createTimeString(selectedHour, selectedMinute);
                                 mEndTimeText.setText(mEndTimeStr);
                             }
-                        }, mHour, mMinute, true);// Yes 24 hour time
+                        }, mHour + 1, 0, true);// Yes 24 hour time
                 mTimePickerDialog.show();
 
             }
@@ -232,6 +258,7 @@ public class AddEventActivity extends AppCompatActivity {
                 mLocationStr = mLocationText.getText().toString();
                 mDescriptionStr = mDescriptionText.getText().toString();
 
+                // Default repeat values
                 if (mRepeatPeriodText.getText().toString().matches(""))
                     mRepeatPeriodVal = 0;
                 else
@@ -241,12 +268,21 @@ public class AddEventActivity extends AppCompatActivity {
                 else
                     mRepeatCountVal = Integer.valueOf(mRepeatCountText.getText().toString());
 
+                // Use only 1 Date and time value if setting a glucose reading or medication reminder
+                if (mEventType == 1 || mEventType == 2) {
+                    mEndDateStr = mStartDateStr;
+                    mEndTimeStr = mStartTimeStr;
+                }
+
                 // Create new event
                 mNewEvent = new Event(mEventType, mTitleStr, mLocationStr, mDescriptionStr,
                         convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
 
                 // Push new event to database
                 mEventsDatabaseReference.push().setValue(mNewEvent);
+
+                // set alert
+                setAlert(mNewEvent.getStartDateTime());
 
                 // Add repeat events
                 if (mPeriodType == 0) {
@@ -256,6 +292,9 @@ public class AddEventActivity extends AppCompatActivity {
                         mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
                                 convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
                         mEventsDatabaseReference.push().setValue(mNewEvent);
+
+                        // set alert
+                        setAlert(mNewEvent.getStartDateTime());
                     }
                 } else if (mPeriodType == 1) {
                     for (int i = 1; i < mRepeatCountVal; i++) {
@@ -264,6 +303,9 @@ public class AddEventActivity extends AppCompatActivity {
                         mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
                                 convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
                         mEventsDatabaseReference.push().setValue(mNewEvent);
+
+                        // set alert
+                        setAlert(mNewEvent.getStartDateTime());
                     }
                 } else if (mPeriodType == 2) {
                     for (int i = 1; i < mRepeatCountVal; i++) {
@@ -272,6 +314,9 @@ public class AddEventActivity extends AppCompatActivity {
                         mNewEvent = new Event(mEventType, mTitleStr + " " + (i + 1), mLocationStr, mDescriptionStr,
                                 convertDateTimeToMillis(mStartDateStr, mStartTimeStr), convertDateTimeToMillis(mEndDateStr, mEndTimeStr));
                         mEventsDatabaseReference.push().setValue(mNewEvent);
+
+                        // set alert
+                        setAlert(mNewEvent.getStartDateTime());
                     }
                 }
 
@@ -392,6 +437,27 @@ public class AddEventActivity extends AppCompatActivity {
         cal.add(Calendar.MONTH, months);
         date = cal.getTime();
         return convertDateToString(date);
+    }
+
+    private void setAlert(long time) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Intent intent = new Intent(this, ReminderAlert.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        /*
+        Alarm will be triggered once exactly at time
+        */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        }
+        /*
+        1st Param : Type of the Alarm
+        2nd Param : Time in milliseconds when the alarm will be triggered first
+        3rd Param : Pending Intent
+        */
     }
 
 }

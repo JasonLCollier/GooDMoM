@@ -108,7 +108,7 @@ public class DashboardActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebasedatabase;
     private DatabaseReference mGdDataDatabaseReference, mUsersDatabaseReference, mRangesDatabaseReference;
     private ChildEventListener mChildEventListener;
-    private ValueEventListener mValueEventListener, mValueEventListenerForDD, mValueEventListenerForRanges;
+    private ValueEventListener mValueEventListenerForGdData, mValueEventListenerForDD, mValueEventListenerForRanges;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -147,11 +147,6 @@ public class DashboardActivity extends AppCompatActivity {
         mBPText = findViewById(R.id.bp_display_text);
         mDaySpinner = findViewById(R.id.day_in_month);
 
-        // Initialise chart, progress bar, display text
-        initialiseProgressBar();
-        initialiseChart();
-        initialiseDisplayText();
-
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR); // current year
@@ -160,12 +155,9 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Initialise spinner default values
         mChartType = 0; // 0 = glucose; 1 = carbs; 2 = activity; 3 = weight; 4 = BP
-        mPeriod = 1; // 0 = day; 1 = month; 2 = gestation
+        mPeriod = 0; // 0 = day; 1 = month; 2 = gestation
         mDayOfMonth = mDay;
         mMonthOfYear = mMonth;
-
-        // Hide day spinner for default layout
-        mDaySpinner.setVisibility(View.GONE);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -179,7 +171,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mChartType = position;
-                updateChart();
+                updateDisplay();
             }
 
             @Override
@@ -196,7 +188,7 @@ public class DashboardActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         mPeriodSpinner.setAdapter(adapter);
         // Default selection on month
-        mPeriodSpinner.setSelection(1);
+        mPeriodSpinner.setSelection(mPeriod);
 
         mPeriodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -214,13 +206,12 @@ public class DashboardActivity extends AppCompatActivity {
                     mDaySpinner.setVisibility(View.GONE);
                 }
 
-                updateChart();
+                updateDisplay();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mPeriod = 1;
-                mDaySpinner.setVisibility(View.GONE);
+                mPeriod = 0;
             }
         });
 
@@ -238,7 +229,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mDayOfMonth = position + 1;
-                updateChart();
+                updateDisplay();
             }
 
             @Override
@@ -261,7 +252,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mMonthOfYear = position;
-                updateChart();
+                updateDisplay();
             }
 
             @Override
@@ -305,6 +296,11 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Attach the database read listener and check when all data has been synchronised
         attachDatabaseReadListener();
+
+        // Initialise chart, progress bar, display text
+        initialiseProgressBar();
+        initialiseDisplayText();
+        initialiseChart();
 
         // Set up bottom navigation view
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -401,10 +397,6 @@ public class DashboardActivity extends AppCompatActivity {
                     mGdDataList.add(data);
                     Collections.sort(mGdDataList);
 
-                    // add data to entries list if it is from the selected month
-                    if (data.month() - 1 == mMonthOfYear)
-                        mEntries.add(new Entry((float) data.hoursOfMonth(), (float) data.getGlucose()));
-
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -421,21 +413,31 @@ public class DashboardActivity extends AppCompatActivity {
             };
             mGdDataDatabaseReference.addChildEventListener(mChildEventListener);
 
+            if (mValueEventListenerForGdData == null) {
+                mValueEventListenerForGdData = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // Value events are always triggered last
+                        // and are guaranteed to contain updates from any other events
+                        // which occurred before that snapshot was taken
+
+                        // Update values
+                        updateDisplay();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+            }
+            mGdDataDatabaseReference.addListenerForSingleValueEvent(mValueEventListenerForGdData);
+
             if (mValueEventListenerForRanges == null) {
                 mValueEventListenerForRanges = new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         mRanges = dataSnapshot.getValue(HpSpecifiedRanges.class);
-
-                        // Value events are always triggered last
-                        // and are guaranteed to contain updates from any other events
-                        // which occurred before that snapshot was taken
-
-                        // Initialise chart
-                        initialiseChart();
-
-                        // Initialise display text
-                        initialiseDisplayText();
                     }
 
                     @Override
@@ -472,6 +474,10 @@ public class DashboardActivity extends AppCompatActivity {
             mGdDataDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
+        if (mValueEventListenerForGdData != null) {
+            mGdDataDatabaseReference.removeEventListener(mValueEventListenerForGdData);
+            mValueEventListenerForGdData = null;
+        }
         if (mValueEventListenerForDD != null) {
             mUsersDatabaseReference.removeEventListener(mValueEventListenerForDD);
             mValueEventListenerForDD = null;
@@ -482,7 +488,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    private void updateChart() {
+    private void updateDisplay() {
         mEntries.clear();
 
         // chart type
@@ -632,35 +638,40 @@ public class DashboardActivity extends AppCompatActivity {
         boolean rangesDefined = false;
         switch (mChartType) {
             case 0:
-                if (mRanges != null && mRanges.getGlucMax() != null && mRanges.getGlucMin() != null) {
+                // check for null values
+                if (mRanges != null && mRanges.getGlucMax() != null && mRanges.getGlucMin() != null && mRanges.getGlucMax() != "" && mRanges.getGlucMin() != "") {
                     goalMax = Double.valueOf(mRanges.getGlucMax());
                     goalMin = Double.valueOf(mRanges.getGlucMin());
                     rangesDefined = true;
                 }
                 break;
             case 1:
-                if (mRanges != null && mRanges.getCarbsMax() != null && mRanges.getCarbsMin() != null) {
+                // check for null values
+                if (mRanges != null && mRanges.getCarbsMax() != null && mRanges.getCarbsMin() != null && mRanges.getCarbsMax() != "" && mRanges.getCarbsMin() != "") {
                     goalMax = Double.valueOf(mRanges.getCarbsMax());
                     goalMin = Double.valueOf(mRanges.getCarbsMin());
                     rangesDefined = true;
                 }
                 break;
             case 2:
-                if (mRanges != null && mRanges.getActMax() != null && mRanges.getActMin() != null) {
+                // check for null values
+                if (mRanges != null && mRanges.getActMax() != null && mRanges.getActMin() != null && mRanges.getActMax() != "" && mRanges.getActMin() != "") {
                     goalMax = Double.valueOf(mRanges.getActMax());
                     goalMin = Double.valueOf(mRanges.getActMin());
                     rangesDefined = true;
                 }
                 break;
             case 3:
-                if (mRanges != null && mRanges.getWeightMax() != null && mRanges.getWeightMin() != null) {
+                // check for null values
+                if (mRanges != null && mRanges.getWeightMax() != null && mRanges.getWeightMin() != null && mRanges.getWeightMax() != "" && mRanges.getWeightMin() != "") {
                     goalMax = Double.valueOf(mRanges.getWeightMax());
                     goalMin = Double.valueOf(mRanges.getWeightMin());
                     rangesDefined = true;
                 }
                 break;
             case 4:
-                if (mRanges != null && mRanges.getSystolicMax() != null && mRanges.getSystolicMin() != null) {
+                // check for null values
+                if (mRanges != null && mRanges.getSystolicMax() != null && mRanges.getSystolicMin() != null && mRanges.getSystolicMax() != "" && mRanges.getSystolicMin() != "") {
                     goalMax = Double.valueOf(mRanges.getSystolicMax());
                     goalMin = Double.valueOf(mRanges.getSystolicMin());
                     rangesDefined = true;

@@ -20,22 +20,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class NotificationService extends Service {
 
     public static final String CHANNEL_ID = "channel_01";
 
-    private String mUserId;
+    private String mUserId, mUsername;
     private boolean mNewMessageNotifications;
-
-    private ArrayList<Event> mEventList;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebasedatabase;
-    private DatabaseReference mMessagesDatabaseReference, mEventsDatabaseReference;
-    private ChildEventListener mChildEventListenerForMessages, mChildEventListenerForEvents;
+    private DatabaseReference mMessagesDatabaseReference;
+    private ChildEventListener mChildEventListenerForMessages;
     private ValueEventListener mValueEventListener;
     private FirebaseAuth mFirebaseAuth;
 
@@ -52,8 +47,8 @@ public class NotificationService extends Service {
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mUserId = user.getUid();
+        mUsername = user.getDisplayName();
         mMessagesDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("messages");
-        mEventsDatabaseReference = mFirebasedatabase.getReference().child("patients").child(mUserId).child("events");
 
         // Attach the database read listener
         attachDatabaseReadListener();
@@ -62,7 +57,7 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        detachDatabaseReadListener();
+        //detachDatabaseReadListener();
     }
 
     private void attachDatabaseReadListener() {
@@ -73,7 +68,8 @@ public class NotificationService extends Service {
                     Message message = dataSnapshot.getValue(Message.class);
                     if (mNewMessageNotifications) {
                         createNotificationChannel();
-                        addNotification(message.getText());
+                        if (message.getName() != mUsername)
+                            addNotification(message.getText());
                     }
                 }
 
@@ -90,30 +86,6 @@ public class NotificationService extends Service {
                 }
             };
             mMessagesDatabaseReference.addChildEventListener(mChildEventListenerForMessages);
-        }
-
-        if (mChildEventListenerForEvents == null) {
-            mChildEventListenerForEvents = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    mEventList.add(event);
-                    Collections.sort(mEventList);
-                }
-
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
-
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                }
-
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            mEventsDatabaseReference.addChildEventListener(mChildEventListenerForEvents);
         }
 
         if (mValueEventListener == null) {
@@ -155,7 +127,7 @@ public class NotificationService extends Service {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.baseline_notifications_24)
+                        .setSmallIcon(R.drawable.baseline_chat_bubble_24)
                         .setContentTitle("GooDMoM")
                         .setContentText(content)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
