@@ -264,6 +264,7 @@
     <string name="glucose_range">Glucose Range</string>
     <string name="weight_range">Weight Range</string>
     <string name="activity_goal">Activity Goal</string>
+    <string name="carbs_goal">Carbs Goal</string>
     <string name="no_data">No Data</string>
 
     <!-- Strings related to due date calculator -->

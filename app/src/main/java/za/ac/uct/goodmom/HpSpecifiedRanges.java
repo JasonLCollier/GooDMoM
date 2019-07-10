@@ -5,32 +5,23 @@ public class HpSpecifiedRanges {
     private String mGlucMin;
     private String mWeightMax;
     private String mWeightMin;
-    private String mActMax;
-    private String mActMin;
-    private String mCarbsMax;
-    private String mCarbsMin;
+    private String mActGoal;
+    private String mCarbsGoal;
     private String mSystolicMax;
     private String mSystolicMin;
     private String mDiastolicMax;
     private String mDiastolicMin;
+    private String mMedication;
 
     public HpSpecifiedRanges() {
     }
 
-    public String getActMax() {
-        return mActMax;
+    public String getActGoal() {
+        return mActGoal;
     }
 
-    public void setActMax(String actMax) {
-        mActMax = actMax;
-    }
-
-    public String getActMin() {
-        return mActMin;
-    }
-
-    public void setActMin(String actMin) {
-        mActMin = actMin;
+    public void setActGoal(String actGoal) {
+        mActGoal = actGoal;
     }
 
     public String getGlucMax() {
@@ -65,20 +56,12 @@ public class HpSpecifiedRanges {
         mWeightMin = weightMin;
     }
 
-    public String getCarbsMax() {
-        return mCarbsMax;
+    public String getCarbsGoal() {
+        return mCarbsGoal;
     }
 
-    public void setCarbsMax(String carbsMax) {
-        mCarbsMax = carbsMax;
-    }
-
-    public String getCarbsMin() {
-        return mCarbsMin;
-    }
-
-    public void setCarbsMin(String carbsMin) {
-        mCarbsMin = carbsMin;
+    public void setCarbsGoal(String carbsGoal) {
+        mCarbsGoal = carbsGoal;
     }
 
     public String getDiastolicMax() {
@@ -111,5 +94,13 @@ public class HpSpecifiedRanges {
 
     public void setSystolicMin(String systolicMin) {
         mSystolicMin = systolicMin;
+    }
+
+    public String getMedication() {
+        return mMedication;
+    }
+
+    public void setMedication(String medication) {
+        mMedication = medication;
     }
 }

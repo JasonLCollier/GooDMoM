@@ -32,7 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private TextView mNameText, mIDText, mEmailText, mPhoneText, mAddressText, mDOBText,
             mHeightText, mWeightText, mBMIText, mDiabetesTypeText, mDueDateText, mHPText,
-            mGlucoseRangeText, mWeightRangeText, mActivityGoalText, mMedicationText;
+            mGlucoseRangeText, mWeightRangeText, mActivityGoalText, mCarbsGoalText, mMedicationText;
 
     private String mUsername, mUserId;
 
@@ -80,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         mGlucoseRangeText = findViewById(R.id.glucose_range_val);
         mWeightRangeText = findViewById(R.id.weight_range_val);
         mActivityGoalText = findViewById(R.id.activity_goal_val);
+        mCarbsGoalText = findViewById(R.id.carbs_goal_val);
         mMedicationText = findViewById(R.id.medication_val);
 
         mDueDateText.setOnClickListener(new View.OnClickListener() {
@@ -286,20 +287,31 @@ public class ProfileActivity extends AppCompatActivity {
     private void updateRangesDisplay(HpSpecifiedRanges ranges) {
         String noDataMessage = "Your HP has not set goals";
 
-        if (ranges == null || ranges.getGlucMin() == null || ranges.getGlucMax() == null)
+        if (ranges == null || ranges.getGlucMin() == null || ranges.getGlucMax() == null || ranges.getGlucMin().equals("") || ranges.getGlucMax().equals(""))
             mGlucoseRangeText.setText(noDataMessage);
         else
             mGlucoseRangeText.setText(ranges.getGlucMin() + " - " + ranges.getGlucMax() + " mmol/L");
 
-        if (ranges == null || ranges.getWeightMin() == null || ranges.getWeightMax() == null)
+        if (ranges == null || ranges.getWeightMin() == null || ranges.getWeightMax() == null || ranges.getWeightMin().equals("") || ranges.getWeightMax().equals(""))
             mWeightRangeText.setText(noDataMessage);
         else
             mWeightRangeText.setText(ranges.getWeightMin() + " - " + ranges.getWeightMax() + " Kg");
 
-        if (ranges == null || ranges.getActMin() == null || ranges.getActMax() == null)
+        if (ranges == null || ranges.getActGoal() == null || ranges.getActGoal().equals(""))
             mActivityGoalText.setText(noDataMessage);
         else
-            mActivityGoalText.setText(ranges.getActMin() + " - " + ranges.getActMax() + " min / week");
+            mActivityGoalText.setText(ranges.getActGoal() + " min / day");
+
+        if (ranges == null || ranges.getCarbsGoal() == null || ranges.getCarbsGoal().equals(""))
+            mCarbsGoalText.setText(noDataMessage);
+        else
+            mCarbsGoalText.setText(ranges.getCarbsGoal() + " g / day");
+
+        if (ranges == null || ranges.getMedication() == null || ranges.getMedication().equals(""))
+            mMedicationText.setText(noDataMessage);
+        else
+            mMedicationText.setText(ranges.getMedication());
+
     }
 
     private void attachDatabaseReadListener() {

@@ -639,31 +639,22 @@ public class DashboardActivity extends AppCompatActivity {
         switch (mChartType) {
             case 0:
                 // check for null values
-                if (mRanges != null && mRanges.getGlucMax() != null && mRanges.getGlucMin() != null && mRanges.getGlucMax() != "" && mRanges.getGlucMin() != "") {
+                if (mRanges != null && mRanges.getGlucMax() != null && mRanges.getGlucMin() != null && !mRanges.getGlucMax().equals("") && !mRanges.getGlucMin().equals("")) {
                     goalMax = Double.valueOf(mRanges.getGlucMax());
                     goalMin = Double.valueOf(mRanges.getGlucMin());
                     rangesDefined = true;
                 }
                 break;
             case 1:
-                // check for null values
-                if (mRanges != null && mRanges.getCarbsMax() != null && mRanges.getCarbsMin() != null && mRanges.getCarbsMax() != "" && mRanges.getCarbsMin() != "") {
-                    goalMax = Double.valueOf(mRanges.getCarbsMax());
-                    goalMin = Double.valueOf(mRanges.getCarbsMin());
-                    rangesDefined = true;
-                }
+
                 break;
             case 2:
                 // check for null values
-                if (mRanges != null && mRanges.getActMax() != null && mRanges.getActMin() != null && mRanges.getActMax() != "" && mRanges.getActMin() != "") {
-                    goalMax = Double.valueOf(mRanges.getActMax());
-                    goalMin = Double.valueOf(mRanges.getActMin());
-                    rangesDefined = true;
-                }
+
                 break;
             case 3:
                 // check for null values
-                if (mRanges != null && mRanges.getWeightMax() != null && mRanges.getWeightMin() != null && mRanges.getWeightMax() != "" && mRanges.getWeightMin() != "") {
+                if (mRanges != null && mRanges.getWeightMax() != null && mRanges.getWeightMin() != null && !mRanges.getWeightMax().equals("") && !mRanges.getWeightMin().equals("")) {
                     goalMax = Double.valueOf(mRanges.getWeightMax());
                     goalMin = Double.valueOf(mRanges.getWeightMin());
                     rangesDefined = true;
@@ -671,7 +662,7 @@ public class DashboardActivity extends AppCompatActivity {
                 break;
             case 4:
                 // check for null values
-                if (mRanges != null && mRanges.getSystolicMax() != null && mRanges.getSystolicMin() != null && mRanges.getSystolicMax() != "" && mRanges.getSystolicMin() != "") {
+                if (mRanges != null && mRanges.getSystolicMax() != null && mRanges.getSystolicMin() != null && !mRanges.getSystolicMax().equals("") && !mRanges.getSystolicMin().equals("")) {
                     goalMax = Double.valueOf(mRanges.getSystolicMax());
                     goalMin = Double.valueOf(mRanges.getSystolicMin());
                     rangesDefined = true;

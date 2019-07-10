@@ -325,7 +325,7 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline4"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_goal_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/carbs_goal_text_view" />
 
         <TextView
             android:id="@+id/name_val"
@@ -552,7 +552,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toTopOf="@+id/activity_goal_text_view"
-            tools:text="30 - 60 min / week" />
+            tools:text="60 min / day" />
 
         <TextView
             android:id="@+id/medication_val"
@@ -568,6 +568,40 @@
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toTopOf="@+id/medication_text_view"
             tools:text="Metformin" />
+
+        <TextView
+            android:id="@+id/carbs_goal_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/bg_event"
+            android:padding="4dp"
+            android:text="@string/carbs_goal"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_goal_text_view" />
+
+        <TextView
+            android:id="@+id/carbs_goal_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/carbs_goal_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"
+            app:layout_constraintTop_toTopOf="@+id/carbs_goal_text_view"
+            tools:text="100 g / day" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
