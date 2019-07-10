@@ -277,15 +277,10 @@ public class ProfileActivity extends AppCompatActivity {
         mDiabetesTypeText.setText(user.getDiabetesType());
         mDueDateText.setText(dueDateText);
         mHPText.setText(user.getHpSurname());
-
-        if (user.getMedication() == null)
-            mMedicationText.setText("Your HP has not set medication");
-        else
-            mMedicationText.setText(user.getMedication());
     }
 
     private void updateRangesDisplay(HpSpecifiedRanges ranges) {
-        String noDataMessage = "Your HP has not set goals";
+        String noDataMessage = "Your HP has not set this yet";
 
         if (ranges == null || ranges.getGlucMin() == null || ranges.getGlucMax() == null || ranges.getGlucMin().equals("") || ranges.getGlucMax().equals(""))
             mGlucoseRangeText.setText(noDataMessage);
