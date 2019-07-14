@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class PersonalInfoActivity extends AppCompatActivity {
 
@@ -73,5 +74,12 @@ public class PersonalInfoActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Do nothing
+        Toast toast = Toast.makeText(getApplicationContext(), "You cannot go back - please finish signing up", Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

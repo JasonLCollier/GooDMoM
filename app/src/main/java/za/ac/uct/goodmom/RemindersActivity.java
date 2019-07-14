@@ -135,6 +135,13 @@ public class RemindersActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent dashboardIntent = new Intent(RemindersActivity.this, DashboardActivity.class);
+        startActivity(dashboardIntent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);

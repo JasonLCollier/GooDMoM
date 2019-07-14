@@ -166,6 +166,13 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent dashboardIntent = new Intent(MessengerActivity.this, DashboardActivity.class);
+        startActivity(dashboardIntent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);

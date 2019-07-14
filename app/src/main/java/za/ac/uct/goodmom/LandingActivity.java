@@ -38,6 +38,12 @@ public class LandingActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        moveTaskToBack(true);
+    }
 }
 
 

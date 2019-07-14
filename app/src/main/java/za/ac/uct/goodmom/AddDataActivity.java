@@ -102,6 +102,9 @@ public class AddDataActivity extends AppCompatActivity {
         mDiastolicText = findViewById(R.id.diastolic_pressure_val);
         mSymptomsText = findViewById(R.id.select_symtoms_text_view);
 
+        // don't let screen focus on first edit text
+        findViewById(R.id.data_container).requestFocus();
+
         // Calender class's instance and get current date , month and year from calender
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR); // current year
