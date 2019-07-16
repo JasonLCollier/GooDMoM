@@ -179,8 +179,10 @@ public class AddEventActivity extends AppCompatActivity {
                                 mStartDateText.setText(formatDisplayDate(mStartDateStr));
 
                                 // update end date if start date is after end date
-                                if (createDateObject(mStartDateStr).compareTo(createDateObject(mEndDateStr)) > 0)
+                                if (createDateObject(mStartDateStr).compareTo(createDateObject(mEndDateStr)) > 0) {
                                     mEndDateText.setText(formatDisplayDate(mStartDateStr));
+                                    mEndDateStr = mStartDateStr;
+                                }
 
                             }
                         }, mYear, mMonth, mDay);
